@@ -1,16 +1,14 @@
-namespace Events.Domain.Models
+namespace Events.Application.DTO.Event
 {
-    public class Event
+    public class EventDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime EventDate { get; set; }
         public string Location { get; set; }
-        public int CategoryId {  get; set; }
-        public Category Category { get; set; }
+        public string CategoryName { get; set; }
         public int MaxParticipants { get; set; }
-        public byte[]? Image {  get; set; }
-        public List<EventParticipant> EventParticipants { get; set; }
+        public byte[]? Image { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace Events.Infrastructure.Repositories.Interfaces
+﻿namespace Events.Domain.Interfaces.Repositories
 {
     public interface IEventParticipantRepository
     {

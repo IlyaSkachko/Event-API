@@ -1,19 +1,20 @@
 using Events.Infrastructure.Data;
 using Events.Infrastructure.Repositories;
-using Events.Infrastructure.UOW.Interfaces;
-
+using Events.Domain.Interfaces.UOW;
+using Events.Domain.Interfaces.Repositories;
 
 namespace Events.Infrastructure.UOW
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private CategoryRepository categoryRepository;
-        private EventParticipantRepository eventParticipantRepository;
-        private EventRepository eventRepository;
-        private ParticipantRepository participantRepository;
+        private ICategoryRepository categoryRepository;
+        private IEventParticipantRepository eventParticipantRepository;
+        private IEventRepository eventRepository;
+        private IParticipantRepository participantRepository;
 
+        private ApplicationDbContext dbContext;
 
-        public CategoryRepository CategoryRepository
+        public ICategoryRepository CategoryRepository
         {
             get
             {
@@ -21,11 +22,12 @@ namespace Events.Infrastructure.UOW
                 {
                     categoryRepository = new CategoryRepository(dbContext);
                 }
+
                 return categoryRepository;
             }
         }
 
-        public EventRepository EventRepository
+        public IEventRepository EventRepository
         {
             get
             {
@@ -33,11 +35,12 @@ namespace Events.Infrastructure.UOW
                 {
                     eventRepository = new EventRepository(dbContext);
                 }
+
                 return eventRepository;
             }
         }
 
-        public EventParticipantRepository EventParticipantRepository
+        public IEventParticipantRepository EventParticipantRepository
         {
             get
             {
@@ -49,7 +52,7 @@ namespace Events.Infrastructure.UOW
             }
         }
 
-        public ParticipantRepository ParticipantRepository
+        public IParticipantRepository ParticipantRepository
         {
             get
             {
@@ -62,7 +65,6 @@ namespace Events.Infrastructure.UOW
         }
 
 
-        private ApplicationDbContext dbContext;
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;

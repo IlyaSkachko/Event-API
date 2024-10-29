@@ -1,7 +1,6 @@
-﻿
-using Events.Domain.Models;
+﻿using Events.Domain.Models;
 using Events.Infrastructure.Data;
-using Events.Infrastructure.Repositories.Interfaces;
+using Events.Domain.Interfaces.Repositories;
 
 namespace Events.Infrastructure.Repositories
 {

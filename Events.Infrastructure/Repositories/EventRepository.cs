@@ -1,8 +1,7 @@
-
-
 using Events.Domain.Models;
 using Events.Infrastructure.Data;
-using Events.Infrastructure.Repositories.Interfaces;
+using Events.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Events.Infrastructure.Repositories
 {
@@ -10,6 +9,33 @@ namespace Events.Infrastructure.Repositories
     {
         public EventRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task AddImageAsync(int id, byte[] image, CancellationToken cancellationToken)
+        {
+            var e = await GetByIdAsync(id, cancellationToken);  
+            e.Image = image;
+            await UpdateAsync(e, cancellationToken);
+        }
+
+        public async Task<IEnumerable<Event>> GetByCategoryAsync(int categoryId, CancellationToken cancellationToken)
+        {
+            return await table.AsNoTracking().Where(e => e.CategoryId == categoryId).ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Event>> GetByDateAsync(DateTime dateTime, CancellationToken cancellationToken)
+        {
+            return await table.AsNoTracking().Where(e => e.EventDate.Equals(dateTime)).ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Event>> GetByLocationAsync(string location, CancellationToken cancellationToken)
+        {
+            return await table.AsNoTracking().Where(e => e.Location.Equals(location)).ToListAsync(cancellationToken);
+        }
+
+        public async Task<Event> GetByNameAsync(string name, CancellationToken cancellationToken)
+        {
+            return await table.AsNoTracking().Where(e => e.Name.Equals(name)).FirstAsync(cancellationToken);
         }
     }
 }

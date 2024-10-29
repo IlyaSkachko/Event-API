@@ -1,5 +1,3 @@
-
-
 namespace Events.Domain.Models
 {
     public class EventParticipant

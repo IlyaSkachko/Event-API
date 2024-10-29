@@ -9,5 +9,5 @@ namespace Events.Domain.Configuration
         {
             return services;
         }
-    }
+    }  
 }
