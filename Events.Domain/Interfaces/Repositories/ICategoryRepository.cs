@@ -1,6 +1,8 @@
-﻿namespace Events.Domain.Interfaces.Repositories
+﻿using Events.Domain.Models;
+
+namespace Events.Domain.Interfaces.Repositories
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository : IGeneralRepository<Category>
     {
     }
 }

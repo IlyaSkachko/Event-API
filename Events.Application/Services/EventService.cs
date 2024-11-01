@@ -4,14 +4,13 @@ using Events.Application.DTO.Event;
 using Events.Application.Services.Interfaces;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Events.Application.Services
 {
     public class EventService : IEventService
     {
-        private IMapper mapper;
-        private IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
+        private readonly IUnitOfWork unitOfWork;
 
         public EventService(IMapper mapper, IUnitOfWork unitOfWork)
         {
@@ -45,16 +44,30 @@ namespace Events.Application.Services
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }
 
-        public async Task<IEnumerable<EventDTO>> GetByCategory(CategoryDTO categoryDTO, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventDTO>> GetByCategoryAsync(CategoryDTO categoryDTO, CancellationToken cancellationToken)
         {
             var collection = await unitOfWork.EventRepository.GetByCategoryAsync(categoryDTO.Id, cancellationToken);
 
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }
 
-        public async Task<IEnumerable<EventDTO>> GetByDateAsync(DateTime date, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventDTO>> GetByCategoryAsync(int pageNumber, int pageSize, CategoryDTO categoryDTO, CancellationToken cancellationToken)
         {
-            var collection = await unitOfWork.EventRepository.GetByDateAsync(date, cancellationToken);
+            var collection = await unitOfWork.EventRepository.GetByCategoryAsync(pageNumber, pageSize, categoryDTO.Id, cancellationToken);
+
+            return mapper.Map<IEnumerable<EventDTO>>(collection);
+        }
+
+        public async Task<IEnumerable<EventDTO>> GetByDateAsync(DateTime dateTime, CancellationToken cancellationToken)
+        {
+            var collection = await unitOfWork.EventRepository.GetByDateAsync(dateTime, cancellationToken);
+
+            return mapper.Map<IEnumerable<EventDTO>>(collection);
+        }
+
+        public async Task<IEnumerable<EventDTO>> GetByDateAsync(int pageNumber, int pageSize, DateTime dateTime, CancellationToken cancellationToken)
+        {
+            var collection = await unitOfWork.EventRepository.GetByDateAsync(pageNumber, pageSize, dateTime, cancellationToken);
 
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }
@@ -66,9 +79,16 @@ namespace Events.Application.Services
             return mapper.Map<EventDTO>(_event);
         }
 
-        public async Task<IEnumerable<EventDTO>> GetByLocation(string location, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventDTO>> GetByLocationAsync(string location, CancellationToken cancellationToken)
         {
             var collection = await unitOfWork.EventRepository.GetByLocationAsync(location, cancellationToken);
+
+            return mapper.Map<IEnumerable<EventDTO>>(collection);
+        }
+
+        public async Task<IEnumerable<EventDTO>> GetByLocationAsync(int pageNumber, int pageSize, string location, CancellationToken cancellationToken)
+        {
+            var collection = await unitOfWork.EventRepository.GetByLocationAsync(pageNumber, pageSize, location, cancellationToken);
 
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }

@@ -1,6 +1,7 @@
 
 using Events.Application.Configuration;
 using Events.Infrastructure.Configuration;
+using Events.WebApi.Middleware;
 
 namespace Events.WebApi
 {
@@ -30,6 +31,8 @@ namespace Events.WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseMiddleware<ErrorMiddleware>();
 
             app.UseHttpsRedirection();
 
