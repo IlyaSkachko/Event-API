@@ -8,9 +8,7 @@ namespace Events.Application.Mapper
     {
         public EventParticipantProfile() 
         {
-            CreateMap<EventParticipant, EventParticipantDTO>()
-                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.Event.Name))
-                .ForMember(dest => dest.ParticipantName, opt => opt.MapFrom(src => src.Participant.Name + " " + src.Participant.Surname))
+            CreateMap<EventParticipantDTO, EventParticipant>()
                 .ReverseMap();
         }
     }

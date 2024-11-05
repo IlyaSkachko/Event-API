@@ -1,4 +1,3 @@
-
 using Events.Application.Configuration;
 using Events.Infrastructure.Configuration;
 using Events.WebApi.Middleware;

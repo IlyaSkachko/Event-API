@@ -17,9 +17,9 @@ namespace Events.Application.Services
             this.mapper = mapper;
         }
 
-        public async Task DeleteAsync(CategoryDTO dto, CancellationToken cancellationToken)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var category = mapper.Map<Category>(dto);
+            var category = await unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
 
             await unitOfWork.CategoryRepository.DeleteAsync(category, cancellationToken);
         }
@@ -28,7 +28,7 @@ namespace Events.Application.Services
         {
             var collection = await unitOfWork.CategoryRepository.GetAllAsync(cancellationToken);
 
-            return  mapper.Map<IEnumerable<CategoryDTO>>(collection);
+            return mapper.Map<IEnumerable<CategoryDTO>>(collection);
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -57,6 +57,7 @@ namespace Events.Application.Services
             var category = mapper.Map<Category>(dto);
 
             await unitOfWork.CategoryRepository.UpdateAsync(category, cancellationToken);
+
         }
     }
 }

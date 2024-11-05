@@ -13,7 +13,7 @@ namespace Events.Infrastructure.Repositories
 
         public new async Task<EventParticipant> GetByIdAsync(int eventId, CancellationToken cancellationToken)
         {
-            return (await table.Where(e => e.EventId == eventId).ToListAsync(cancellationToken)).FirstOrDefault();
+            return await table.Where(e => e.EventId == eventId).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

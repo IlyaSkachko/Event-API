@@ -34,7 +34,9 @@ namespace Events.WebApi.Middleware
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = problemDetails.Status.Value;
+
             var jsonProblemDetails = JsonSerializer.Serialize(problemDetails);
+            
             await context.Response.WriteAsync(jsonProblemDetails);
         }
     }

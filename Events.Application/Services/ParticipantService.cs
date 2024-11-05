@@ -10,16 +10,18 @@ namespace Events.Application.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly IHashService hashService;
 
-        public ParticipantService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ParticipantService(IUnitOfWork unitOfWork, IMapper mapper, IHashService hashService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.hashService = hashService;
         }
     
-        public async Task DeleteAsync(ParticipantDTO dto, CancellationToken cancellationToken)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var obj = mapper.Map<Participant>(dto);
+            var obj = await unitOfWork.ParticipantRepository.GetByIdAsync(id, cancellationToken);
 
             await unitOfWork.ParticipantRepository.DeleteAsync(obj, cancellationToken);
         }
@@ -45,18 +47,28 @@ namespace Events.Application.Services
             return mapper.Map<ParticipantDTO>(participant);
         }
 
-        public async Task InsertAsync(ParticipantDTO dto, CancellationToken cancellationToken)
+        public async Task InsertAsync(CreateParticipantDTO dto, CancellationToken cancellationToken)
         {
             var entity = mapper.Map<Participant>(dto);
+
+            entity.Password = hashService.HashPassword(entity.Password, out byte[] salt);
+            entity.PasswordSalt = salt;
 
             await unitOfWork.ParticipantRepository.InsertAsync(entity, cancellationToken);
         }
 
-        public async Task UpdateAsync(ParticipantDTO dto, CancellationToken cancellationToken)
+        public async Task UpdateAsync(UpdateParticipantDTO dto, CancellationToken cancellationToken)
         {
             var entity = mapper.Map<Participant>(dto);
 
-            await unitOfWork.ParticipantRepository.UpdateAsync(entity, cancellationToken);
+            var existingEntity = await unitOfWork.ParticipantRepository.GetByIdAsync(dto.Id, cancellationToken);
+
+            if (existingEntity != null)
+            {
+                mapper.Map(dto, existingEntity);
+
+                await unitOfWork.ParticipantRepository.UpdateAsync(existingEntity, cancellationToken);
+            }
         }
     }
 }

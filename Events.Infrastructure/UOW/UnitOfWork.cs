@@ -11,14 +11,13 @@ namespace Events.Infrastructure.UOW
         private IEventParticipantRepository eventParticipantRepository;
         private IEventRepository eventRepository;
         private IParticipantRepository participantRepository;
-
         private ApplicationDbContext dbContext;
 
         public ICategoryRepository CategoryRepository
         {
             get
             {
-                if (categoryRepository == null)
+                if (categoryRepository is null)
                 {
                     categoryRepository = new CategoryRepository(dbContext);
                 }
@@ -31,7 +30,7 @@ namespace Events.Infrastructure.UOW
         {
             get
             {
-                if (eventRepository == null)
+                if (eventRepository is null)
                 {
                     eventRepository = new EventRepository(dbContext);
                 }
@@ -44,7 +43,7 @@ namespace Events.Infrastructure.UOW
         {
             get
             {
-                if (eventParticipantRepository == null)
+                if (eventParticipantRepository is null)
                 {
                     eventParticipantRepository = new EventParticipantRepository(dbContext);
                 }
@@ -56,7 +55,7 @@ namespace Events.Infrastructure.UOW
         {
             get
             {
-                if (participantRepository == null)
+                if (participantRepository is null)
                 {
                     participantRepository = new ParticipantRepository(dbContext);
                 }

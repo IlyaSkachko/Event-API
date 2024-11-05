@@ -12,16 +12,12 @@ namespace Events.Infrastructure.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<EventParticipant> EventsParticipant { get; set; }
 
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions options) : base(options) 
+        {}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventParticipantConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ParticipantConfiguration).Assembly);
-
-            CategoryConfiguration.Initialization(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
         }

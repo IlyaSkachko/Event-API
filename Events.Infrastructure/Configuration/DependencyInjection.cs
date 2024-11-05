@@ -1,6 +1,8 @@
 using Events.Domain.Interfaces.Repositories;
+using Events.Domain.Interfaces.UOW;
 using Events.Infrastructure.Data;
 using Events.Infrastructure.Repositories;
+using Events.Infrastructure.UOW;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,7 @@ namespace Events.Infrastructure.Configuration
                 options.UseSqlServer(connectionString);
             });
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IParticipantRepository, ParticipantRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventParticipantRepository, EventParticipantRepository>();

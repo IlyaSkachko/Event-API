@@ -25,7 +25,7 @@ namespace Events.Infrastructure.Repositories
 
         public async Task<IEnumerable<Event>> GetByCategoryAsync(int pageNumber, int pageSize, int categoryId, CancellationToken cancellationToken)
         {
-            return await table.AsNoTracking().Where(e => e.CategoryId == categoryId).Skip((pageNumber - 1) * pageSize).ToListAsync(cancellationToken);
+            return await table.AsNoTracking().Where(e => e.CategoryId == categoryId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Event>> GetByDateAsync(DateTime dateTime, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ namespace Events.Infrastructure.Repositories
 
         public async Task<IEnumerable<Event>> GetByDateAsync(int pageNumber, int pageSize, DateTime dateTime, CancellationToken cancellationToken)
         {
-            return await table.AsNoTracking().Where(e => e.EventDate.Equals(dateTime)).Skip((pageNumber - 1) * pageSize).ToListAsync(cancellationToken);
+            return await table.AsNoTracking().Where(e => e.EventDate.Equals(dateTime)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Event>> GetByLocationAsync(string location, CancellationToken cancellationToken)
@@ -45,12 +45,12 @@ namespace Events.Infrastructure.Repositories
 
         public async Task<IEnumerable<Event>> GetByLocationAsync(int pageNumber, int pageSize, string location, CancellationToken cancellationToken)
         {
-            return await table.AsNoTracking().Where(e => e.Location.Equals(location)).Skip((pageNumber - 1) * pageSize).ToListAsync(cancellationToken);
+            return await table.AsNoTracking().Where(e => e.Location.Equals(location)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
 
         public async Task<Event> GetByNameAsync(string name, CancellationToken cancellationToken)
         {
-            return await table.AsNoTracking().Where(e => e.Name.Equals(name)).FirstAsync(cancellationToken);
+            return await table.AsNoTracking().Where(e => e.Name.Equals(name)).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

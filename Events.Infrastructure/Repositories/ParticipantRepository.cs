@@ -1,6 +1,7 @@
 using Events.Domain.Models;
 using Events.Infrastructure.Data;
 using Events.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Events.Infrastructure.Repositories
 {

@@ -25,14 +25,14 @@ namespace Events.Application.Services
             await unitOfWork.EventRepository.InsertAsync(_event, cancellationToken);
         }
 
-        public async Task AddImageAsync(EventImageDTO dto, CancellationToken cancellationToken)
+        public async Task AddImageAsync(int eventId, EventImageDTO dto, CancellationToken cancellationToken)
         {
-            await unitOfWork.EventRepository.AddImageAsync(dto.Id, dto.Image, cancellationToken);
+            await unitOfWork.EventRepository.AddImageAsync(eventId, dto.Image, cancellationToken);
         }
 
-        public async Task DeleteAsync(EventDTO dto, CancellationToken cancellationToken)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var _event = mapper.Map<Event>(dto);
+            var _event = await unitOfWork.EventRepository.GetByIdAsync(id, cancellationToken);
 
             await unitOfWork.EventRepository.DeleteAsync(_event, cancellationToken);
         }
@@ -44,6 +44,13 @@ namespace Events.Application.Services
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }
 
+        public async Task<IEnumerable<EventDTO>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var collection = await unitOfWork.EventRepository.GetAllAsync(pageNumber, pageSize, cancellationToken);
+
+            return mapper.Map<IEnumerable<EventDTO>>(collection);
+        }
+
         public async Task<IEnumerable<EventDTO>> GetByCategoryAsync(CategoryDTO categoryDTO, CancellationToken cancellationToken)
         {
             var collection = await unitOfWork.EventRepository.GetByCategoryAsync(categoryDTO.Id, cancellationToken);
@@ -51,9 +58,9 @@ namespace Events.Application.Services
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }
 
-        public async Task<IEnumerable<EventDTO>> GetByCategoryAsync(int pageNumber, int pageSize, CategoryDTO categoryDTO, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventDTO>> GetByCategoryAsync(int pageNumber, int pageSize, int id, CancellationToken cancellationToken)
         {
-            var collection = await unitOfWork.EventRepository.GetByCategoryAsync(pageNumber, pageSize, categoryDTO.Id, cancellationToken);
+            var collection = await unitOfWork.EventRepository.GetByCategoryAsync(pageNumber, pageSize, id, cancellationToken);
 
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }

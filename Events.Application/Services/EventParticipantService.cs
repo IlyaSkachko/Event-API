@@ -18,11 +18,11 @@ namespace Events.Application.Services
             this.mapper = mapper;
         }
 
-        public async Task DeleteAsync(EventParticipantDTO dto, CancellationToken cancellationToken)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var category = mapper.Map<EventParticipant>(dto);
+            var obj = await unitOfWork.EventParticipantRepository.GetByIdAsync(id, cancellationToken);
 
-            await unitOfWork.EventParticipantRepository.DeleteAsync(category, cancellationToken);
+            await unitOfWork.EventParticipantRepository.DeleteAsync(obj, cancellationToken);
         }
 
         public async Task<IEnumerable<EventParticipantDTO>> GetAllAsync(CancellationToken cancellationToken)

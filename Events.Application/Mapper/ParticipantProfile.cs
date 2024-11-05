@@ -8,9 +8,13 @@ namespace Events.Application.Mapper
     {
         public ParticipantProfile()
         {
-            CreateMap<Participant, ParticipantDTO>()
+            CreateMap<ParticipantDTO, Participant>()
                 .ReverseMap();
             CreateMap<Participant, ParticipantAuthDTO>()
+                .ReverseMap();
+            CreateMap<Participant, CreateParticipantDTO>()
+                .ReverseMap();
+            CreateMap<Participant, UpdateParticipantDTO>()
                 .ReverseMap();
         }
     }

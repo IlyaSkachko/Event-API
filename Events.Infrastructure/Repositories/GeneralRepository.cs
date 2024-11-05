@@ -6,7 +6,7 @@ namespace Events.Infrastructure.Repositories
 {
     public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     {
-        private ApplicationDbContext dbContext;
+        protected ApplicationDbContext dbContext;
         protected DbSet<T> table;
 
         public GeneralRepository(ApplicationDbContext dbContext)
@@ -31,7 +31,7 @@ namespace Events.Infrastructure.Repositories
 
         public async Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var collection = await table.AsNoTracking().Skip((pageNumber - 1) * pageSize).ToListAsync(cancellationToken);
+            var collection = await table.AsNoTracking().Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
 
             return collection;
         }
