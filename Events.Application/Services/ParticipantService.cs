@@ -3,6 +3,7 @@ using Events.Application.DTO.Participant;
 using Events.Application.Services.Interfaces;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Events.Application.Services
 {
@@ -11,14 +12,31 @@ namespace Events.Application.Services
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
         private readonly IHashService hashService;
+        private readonly ITokenService tokenService;
 
-        public ParticipantService(IUnitOfWork unitOfWork, IMapper mapper, IHashService hashService)
+        public ParticipantService(IUnitOfWork unitOfWork, IMapper mapper, IHashService hashService, ITokenService tokenService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.hashService = hashService;
+            this.tokenService = tokenService;
         }
-    
+
+        public async Task<string> Login(ParticipantAuthDTO dto, CancellationToken cancellationToken)
+        {
+            var participant = await unitOfWork.ParticipantRepository.GetByEmailAsync(dto.Email, cancellationToken);
+
+            if (!hashService.VerifyPassword(dto.Password, participant.Password, participant.PasswordSalt))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            var token = tokenService.Generate(participant);
+
+            return token;
+        }
+
+
         public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
             var obj = await unitOfWork.ParticipantRepository.GetByIdAsync(id, cancellationToken);

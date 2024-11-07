@@ -1,5 +1,6 @@
 ﻿using Events.Application.DTO.Category;
 using Events.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Events.WebApi.Controllers
@@ -27,6 +28,7 @@ namespace Events.WebApi.Controllers
             return Ok(await categoryService.GetByIdAsync(id, cancellationToken));
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddCategory([FromBody] CategoryDTO category, CancellationToken cancellationToken)
         {
@@ -35,6 +37,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateCategory([FromBody] CategoryDTO category, CancellationToken cancellationToken)
         {
@@ -43,6 +46,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id, CancellationToken cancellationToken)
         {

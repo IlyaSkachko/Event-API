@@ -10,5 +10,6 @@ namespace Events.Application.Services.Interfaces
         Task UpdateAsync(UpdateParticipantDTO dto, CancellationToken cancellationToken);
         Task DeleteAsync(int id, CancellationToken cancellationToken);
         Task InsertAsync(CreateParticipantDTO dto, CancellationToken cancellationToken);
+        Task<string> Login(ParticipantAuthDTO dto, CancellationToken cancellationToken);
     }
 }

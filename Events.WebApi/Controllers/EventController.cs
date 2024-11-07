@@ -1,10 +1,12 @@
 ﻿using Events.Application.DTO.Event;
 using Events.Application.DTO.EventParticipant;
 using Events.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Events.WebApi.Controllers
 {
+
     [Route("api/events")]
     [ApiController]
     public class EventController : Controller
@@ -65,6 +67,7 @@ namespace Events.WebApi.Controllers
             return Ok(await eventParticipantService.GetByIdAsync(eventId, cancellationToken));
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddEvent([FromBody] EventDTO eventDTO, CancellationToken cancellationToken)
         {
@@ -73,6 +76,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPost("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> AddParticipant(int eventId, int participantId, CancellationToken cancellationToken)
         {
@@ -82,6 +86,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvent([FromBody] EventDTO eventDTO, CancellationToken cancellationToken)
         {
@@ -90,6 +95,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPut("{eventId}/image")]
         public async Task<IActionResult> UpdateImageEvent(int eventId, IFormFile file, CancellationToken cancellationToken)
         {
@@ -100,6 +106,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id, CancellationToken cancellationToken)
         {
@@ -108,6 +115,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{eventId}/participant/{participantId}")]
         public async Task<IActionResult> DeleteParticipantFromEvent(int eventId, int participantId, CancellationToken cancellationToken)
         {

@@ -1,6 +1,7 @@
 using Events.Application.Configuration;
 using Events.Domain.Cloudinary;
 using Events.Infrastructure.Configuration;
+using Events.WebApi.Configuration;
 using Events.WebApi.Middleware;
 
 namespace Events.WebApi
@@ -24,7 +25,8 @@ namespace Events.WebApi
 
             builder.Services
                 .AddInfrastructure(builder.Configuration)
-                .AddApplication(cloudinarySettings);
+                .AddApplication(cloudinarySettings)
+                .AddWebAPI(builder.Configuration);
 
             var app = builder.Build();
 
@@ -39,8 +41,8 @@ namespace Events.WebApi
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

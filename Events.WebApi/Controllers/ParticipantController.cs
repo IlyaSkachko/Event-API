@@ -1,5 +1,6 @@
 ﻿using Events.Application.DTO.Participant;
 using Events.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Events.WebApi.Controllers
@@ -15,6 +16,15 @@ namespace Events.WebApi.Controllers
             this.participantService = participantService;
         }
 
+        [HttpPost("/login")]
+        public async Task<IActionResult> Login([FromBody] ParticipantAuthDTO dto, CancellationToken cancellationToken)
+        {
+            var token = await participantService.Login(dto, cancellationToken);
+
+            Response.Cookies.Append("access-token", token);
+
+            return Ok(token);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
@@ -28,6 +38,7 @@ namespace Events.WebApi.Controllers
             return Ok(await participantService.GetByIdAsync(id, cancellationToken));
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddParticipant([FromBody] CreateParticipantDTO participant, CancellationToken cancellationToken)
         {
@@ -36,6 +47,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateParticipant([FromBody] UpdateParticipantDTO participant, CancellationToken cancellationToken)
         {
@@ -44,6 +56,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParticipant(int id, CancellationToken cancellationToken)
         {

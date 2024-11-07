@@ -10,5 +10,10 @@ namespace Events.Infrastructure.Repositories
         public ParticipantRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
+
+        public async Task<Participant> GetByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            return await table.Where(p => p.Email.Equals(email)).FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

@@ -3,5 +3,7 @@
 namespace Events.Domain.Interfaces.Repositories
 {
     public interface IParticipantRepository : IGeneralRepository<Participant>
-    {}
+    {
+        Task<Participant> GetByEmailAsync(string email, CancellationToken cancellationToken);
+    }
 }

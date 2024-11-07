@@ -31,6 +31,7 @@ namespace Events.Application.Configuration
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IHashService, HashService>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             services.AddScoped<IValidator<EventDTO>, EventValidator>();
             services.AddScoped<IValidator<EventImageDTO>, EventImageValidator>();
