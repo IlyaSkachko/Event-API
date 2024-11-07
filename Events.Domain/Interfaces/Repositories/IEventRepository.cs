@@ -11,6 +11,6 @@ namespace Events.Domain.Interfaces.Repositories
         Task<IEnumerable<Event>> GetByDateAsync(int pageNumber, int pageSize, DateTime dateTime, CancellationToken cancellationToken);
         Task<IEnumerable<Event>> GetByLocationAsync(int pageNumber, int pageSize, string location, CancellationToken cancellationToken);
         Task<IEnumerable<Event>> GetByCategoryAsync(int pageNumber, int pageSize, int categoryId, CancellationToken cancellationToken);
-        Task AddImageAsync(int id, byte[] image, CancellationToken cancellationToken);
+        Task AddImageAsync(int id, string image, CancellationToken cancellationToken);
     }
 }

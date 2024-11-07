@@ -10,7 +10,7 @@ namespace Events.Domain.Models
         public int CategoryId {  get; set; }
         public Category Category { get; set; }
         public int MaxParticipants { get; set; }
-        public byte[]? Image {  get; set; }
+        public string? Image {  get; set; }
         public List<EventParticipant> EventParticipants { get; set; }
     }
 }

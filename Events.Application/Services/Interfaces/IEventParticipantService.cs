@@ -6,9 +6,9 @@ namespace Events.Application.Services.Interfaces
     {
         Task<IEnumerable<EventParticipantDTO>> GetAllAsync(CancellationToken cancellationToken);
         Task<IEnumerable<EventParticipantDTO>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
-        Task<EventParticipantDTO> GetByIdAsync(int eventId, CancellationToken cancellationToken);
+        Task<IEnumerable<EventParticipantDTO>> GetByIdAsync(int eventId, CancellationToken cancellationToken);
         Task UpdateAsync(EventParticipantDTO dto, CancellationToken cancellationToken);
-        Task DeleteAsync(int id, CancellationToken cancellationToken);
+        Task DeleteAsync(int eventId, int participantId, CancellationToken cancellationToken);
         Task InsertAsync(EventParticipantDTO dto, CancellationToken cancellationToken);
     }
 }

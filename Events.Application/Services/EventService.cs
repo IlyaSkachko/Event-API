@@ -25,9 +25,9 @@ namespace Events.Application.Services
             await unitOfWork.EventRepository.InsertAsync(_event, cancellationToken);
         }
 
-        public async Task AddImageAsync(int eventId, EventImageDTO dto, CancellationToken cancellationToken)
+        public async Task AddImageAsync(int eventId, string url, CancellationToken cancellationToken)
         {
-            await unitOfWork.EventRepository.AddImageAsync(eventId, dto.Image, cancellationToken);
+            await unitOfWork.EventRepository.AddImageAsync(eventId, url, cancellationToken);
         }
 
         public async Task DeleteAsync(int id, CancellationToken cancellationToken)

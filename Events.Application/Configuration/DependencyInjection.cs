@@ -7,6 +7,7 @@ using Events.Application.Services.Interfaces;
 using Events.Application.Validation.Category;
 using Events.Application.Validation.Event;
 using Events.Application.Validation.Participant;
+using Events.Domain.Cloudinary;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,18 +15,22 @@ namespace Events.Application.Configuration
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services)
+        public static IServiceCollection AddApplication(this IServiceCollection services, CloudinarySettings cloudinarySettings)
         {
+            services.AddSingleton(cloudinarySettings);
+
             services.AddAutoMapper(typeof(EventProfile), 
                                    typeof(CategoryProfile),
                                    typeof(EventParticipantProfile),
                                    typeof(ParticipantProfile));
 
+            
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IParticipantService, ParticipantService>();
             services.AddScoped<IEventParticipantService, EventParticipantService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IHashService, HashService>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             services.AddScoped<IValidator<EventDTO>, EventValidator>();
             services.AddScoped<IValidator<EventImageDTO>, EventImageValidator>();

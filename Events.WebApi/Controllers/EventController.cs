@@ -11,11 +11,13 @@ namespace Events.WebApi.Controllers
     {
         private readonly IEventService eventService;
         private readonly IEventParticipantService eventParticipantService;
+        private readonly ICloudinaryService cloudinaryService;
 
-        public EventController(IEventService eventService, IEventParticipantService eventParticipantService)
+        public EventController(IEventService eventService, IEventParticipantService eventParticipantService, ICloudinaryService cloudinaryService)
         {
             this.eventService = eventService;
             this.eventParticipantService = eventParticipantService;
+            this.cloudinaryService = cloudinaryService;
         }
 
 
@@ -57,10 +59,10 @@ namespace Events.WebApi.Controllers
             return Ok(await eventService.GetByCategoryAsync(pageNumber, pageSize, categoryId, cancellationToken));
         }
 
-        [HttpGet("{id}/participants")]
-        public async Task<IActionResult> GetParticipants(int id, CancellationToken cancellationToken)
+        [HttpGet("{eventId}/participants")]
+        public async Task<IActionResult> GetParticipants(int eventId, CancellationToken cancellationToken)
         {
-            return Ok(await eventParticipantService.GetByIdAsync(id, cancellationToken));
+            return Ok(await eventParticipantService.GetByIdAsync(eventId, cancellationToken));
         }
 
         [HttpPost]
@@ -88,10 +90,12 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}/image")]
-        public async Task<IActionResult> UpdateImageEvent(int eventId, [FromBody] EventImageDTO eventDTO, CancellationToken cancellationToken)
+        [HttpPut("{eventId}/image")]
+        public async Task<IActionResult> UpdateImageEvent(int eventId, IFormFile file, CancellationToken cancellationToken)
         {
-            await eventService.AddImageAsync(eventId, eventDTO, cancellationToken);
+            var url = await cloudinaryService.UploadImage(file);
+
+            await eventService.AddImageAsync(eventId, url, cancellationToken);
 
             return Ok();
         }
@@ -104,10 +108,10 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}/participant")]
-        public async Task<IActionResult> DeleteParticipantFromEvent(int id, CancellationToken cancellationToken)
+        [HttpDelete("{eventId}/participant/{participantId}")]
+        public async Task<IActionResult> DeleteParticipantFromEvent(int eventId, int participantId, CancellationToken cancellationToken)
         {
-            await eventParticipantService.DeleteAsync(id, cancellationToken);
+            await eventParticipantService.DeleteAsync(eventId, participantId, cancellationToken);
              
             return Ok();
         }

@@ -1,4 +1,5 @@
-﻿using Events.Application.DTO.Category;
+﻿using CloudinaryDotNet;
+using Events.Application.DTO.Category;
 using Events.Application.DTO.Event;
 using Events.Domain.Models;
 
@@ -18,7 +19,7 @@ namespace Events.Application.Services.Interfaces
         Task<EventDTO> GetByNameAsync(string name, CancellationToken cancellationToken);
         Task AddAsync(EventDTO dto, CancellationToken cancellationToken);
         Task UpdateAsync(EventDTO dto, CancellationToken cancellationToken);
-        Task AddImageAsync(int eventId, EventImageDTO dto, CancellationToken cancellationToken);
+        Task AddImageAsync(int eventId, string url, CancellationToken cancellationToken);
         Task DeleteAsync(int id, CancellationToken cancellationToken);
     }
 }

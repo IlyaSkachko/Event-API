@@ -18,9 +18,9 @@ namespace Events.Application.Services
             this.mapper = mapper;
         }
 
-        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task DeleteAsync(int eventId, int participantId, CancellationToken cancellationToken)
         {
-            var obj = await unitOfWork.EventParticipantRepository.GetByIdAsync(id, cancellationToken);
+            var obj = await unitOfWork.EventParticipantRepository.GetByIdAsync(eventId, participantId, cancellationToken);
 
             await unitOfWork.EventParticipantRepository.DeleteAsync(obj, cancellationToken);
         }
@@ -39,11 +39,11 @@ namespace Events.Application.Services
             return mapper.Map<IEnumerable<EventParticipantDTO>>(collection);
         }
 
-        public async Task<EventParticipantDTO> GetByIdAsync(int eventId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventParticipantDTO>> GetByIdAsync(int eventId, CancellationToken cancellationToken)
         {
-            var obj = await unitOfWork.EventParticipantRepository.GetByIdAsync(eventId, cancellationToken);
+            var obj = await unitOfWork.EventParticipantRepository.GetByEventIdAsync(eventId, cancellationToken);
 
-            return mapper.Map<EventParticipantDTO>(obj);
+            return mapper.Map<IEnumerable<EventParticipantDTO>>(obj);
         }
 
         public async Task InsertAsync(EventParticipantDTO dto, CancellationToken cancellationToken)

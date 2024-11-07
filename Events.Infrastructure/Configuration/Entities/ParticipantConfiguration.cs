@@ -20,8 +20,6 @@ namespace Events.Infrastructure.Configuration.Entities
                 .IsRequired();
             builder.Property(p => p.Password)
                 .IsRequired();
-            builder.Property(p => p.PasswordSalt)
-                .IsRequired();
             builder.Property(p => p.Email)
                 .HasMaxLength(100)
                 .IsRequired();

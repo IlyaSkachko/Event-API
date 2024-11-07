@@ -11,7 +11,7 @@ namespace Events.Infrastructure.Repositories
         {
         }
 
-        public async Task AddImageAsync(int id, byte[] image, CancellationToken cancellationToken)
+        public async Task AddImageAsync(int id, string image, CancellationToken cancellationToken)
         {
             var e = await GetByIdAsync(id, cancellationToken);  
             e.Image = image;

@@ -1,4 +1,5 @@
 using Events.Application.Configuration;
+using Events.Domain.Cloudinary;
 using Events.Infrastructure.Configuration;
 using Events.WebApi.Middleware;
 
@@ -17,10 +18,13 @@ namespace Events.WebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-             
+            var cloudinaryUrl = Environment.GetEnvironmentVariable("CLOUDINARY_URL");
+
+            var cloudinarySettings = new CloudinarySettings { Url = cloudinaryUrl };
+
             builder.Services
                 .AddInfrastructure(builder.Configuration)
-                .AddApplication();
+                .AddApplication(cloudinarySettings);
 
             var app = builder.Build();
 
