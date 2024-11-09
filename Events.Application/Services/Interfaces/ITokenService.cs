@@ -1,9 +1,11 @@
-﻿using Events.Domain.Models;
+﻿using Events.Application.DTO.Participant;
+using Events.Domain.Models;
 
 namespace Events.Application.Services.Interfaces
 {
     public interface ITokenService
     {
-        string Generate(Participant participant);
+        string GenerateAccessToken(ParticipantDTO participant, DateTime expiresTime);
+        string GenerateRefreshToken(ParticipantDTO participant, DateTime expiresTime);
     }
 }

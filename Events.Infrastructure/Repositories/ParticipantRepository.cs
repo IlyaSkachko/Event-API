@@ -15,5 +15,10 @@ namespace Events.Infrastructure.Repositories
         {
             return await table.Where(p => p.Email.Equals(email)).FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<Participant> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+        {
+            return await dbContext.Participants.FirstOrDefaultAsync(p => p.RefreshToken.Equals(refreshToken), cancellationToken);
+        }
     }
 }

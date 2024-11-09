@@ -7,5 +7,6 @@ namespace Events.Application.DTO.Participant
         public string Surname { get; set; }
         public DateTime BirthDate { get; set; }
         public string Email { get; set; }
+        public string RefreshToken {  get; set; } = string.Empty;
     }
 }

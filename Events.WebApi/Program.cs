@@ -1,4 +1,6 @@
+using AutoMapper;
 using Events.Application.Configuration;
+using Events.Application.Services.Interfaces;
 using Events.Domain.Cloudinary;
 using Events.Infrastructure.Configuration;
 using Events.WebApi.Configuration;

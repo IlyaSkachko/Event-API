@@ -3,6 +3,7 @@ using Events.Application.DTO.EventParticipant;
 using Events.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Events.WebApi.Controllers
 {
@@ -20,6 +21,7 @@ namespace Events.WebApi.Controllers
             this.eventService = eventService;
             this.eventParticipantService = eventParticipantService;
             this.cloudinaryService = cloudinaryService;
+            this.memoryCache = memoryCache;
         }
 
 

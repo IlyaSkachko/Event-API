@@ -1,7 +1,12 @@
-﻿using Events.Application.DTO.Participant;
+﻿using AutoMapper;
+using Events.Application.DTO.Participant;
 using Events.Application.Services.Interfaces;
+using Events.Domain.Models;
+using Events.Infrastructure.UOW;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
 
 namespace Events.WebApi.Controllers
 {
@@ -10,20 +15,114 @@ namespace Events.WebApi.Controllers
     public class ParticipantController : Controller
     {
         private readonly IParticipantService participantService;
+        private readonly ITokenService tokenService;
+        private readonly IMapper mapper;
 
-        public ParticipantController(IParticipantService participantService)
+        public ParticipantController(IParticipantService participantService, ITokenService tokenService, IMapper mapper)
         {
             this.participantService = participantService;
+            this.tokenService = tokenService;
+            this.mapper = mapper;
         }
 
         [HttpPost("/login")]
         public async Task<IActionResult> Login([FromBody] ParticipantAuthDTO dto, CancellationToken cancellationToken)
         {
-            var token = await participantService.Login(dto, cancellationToken);
+            var tokens = await participantService.Login(dto, cancellationToken);
 
-            Response.Cookies.Append("access-token", token);
+            var accessCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = tokens.AccessExpires
+            };
 
-            return Ok(token);
+            Response.Cookies.Append("access-token", tokens.Access, accessCookieOptions);
+
+            var refreshCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = tokens.RefreshExpires
+            };
+
+            Response.Cookies.Append("refresh-token", tokens.Refresh, refreshCookieOptions);
+
+            return Ok();
+        }
+
+        [HttpPut("/refresh")]
+        public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
+        {
+            var refreshToken = Request.Cookies["refresh-token"];
+
+            if (refreshToken is null)
+            {
+                throw new UnauthorizedAccessException("Refresh token doesn't exist");
+            }
+
+            var participant = await participantService.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+
+            if (participant is null)
+            {
+                Response.Cookies.Delete("access-token");
+                Response.Cookies.Delete("refresh-token");
+
+                throw new UnauthorizedAccessException("Invalid refresh token");
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+
+            var jwtToken = handler.ReadToken(refreshToken) as JwtSecurityToken;
+
+            if (jwtToken == null || jwtToken.ValidTo < DateTime.UtcNow)
+            {
+                Response.Cookies.Delete("access-token");
+                Response.Cookies.Delete("refresh-token");
+
+                await participantService.DeleteRefreshTokenAsync(participant, cancellationToken);
+
+                throw new UnauthorizedAccessException("Refresh token has expired");
+            }
+
+            var accessExpires = DateTime.UtcNow.AddMinutes(15);
+
+            var newAccessToken = tokenService.GenerateAccessToken(participant, accessExpires);
+            var accessCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = accessExpires
+            };
+
+            Response.Cookies.Append("access-token", newAccessToken, accessCookieOptions);
+
+            return Ok();
+        }
+
+        [HttpDelete("/logout")]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+            var refreshToken = Request.Cookies["refresh-token"];
+
+            if (refreshToken is null)
+            {
+                throw new UnauthorizedAccessException("Logout has already completed");
+            }
+
+            var participant = await participantService.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+
+            if (participant is null)
+            {
+                Response.Cookies.Delete("access-token");
+                Response.Cookies.Delete("refresh-token");
+
+                return Ok();
+            }
+
+            await participantService.DeleteRefreshTokenAsync(participant, cancellationToken);
+
+            Response.Cookies.Delete("access-token");
+            Response.Cookies.Delete("refresh-token");
+
+            return Ok();
         }
 
         [HttpGet]

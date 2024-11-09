@@ -16,6 +16,8 @@ namespace Events.Application.Mapper
                 .ReverseMap();
             CreateMap<Participant, UpdateParticipantDTO>()
                 .ReverseMap();
+            CreateMap<ParticipantDTO, UpdateParticipantDTO>()
+                .ReverseMap();
         }
     }
 }

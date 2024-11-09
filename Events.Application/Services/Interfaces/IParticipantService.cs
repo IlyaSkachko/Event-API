@@ -1,4 +1,5 @@
 ﻿using Events.Application.DTO.Participant;
+using Events.Application.DTO.Token;
 
 namespace Events.Application.Services.Interfaces
 {
@@ -10,6 +11,8 @@ namespace Events.Application.Services.Interfaces
         Task UpdateAsync(UpdateParticipantDTO dto, CancellationToken cancellationToken);
         Task DeleteAsync(int id, CancellationToken cancellationToken);
         Task InsertAsync(CreateParticipantDTO dto, CancellationToken cancellationToken);
-        Task<string> Login(ParticipantAuthDTO dto, CancellationToken cancellationToken);
+        Task<TokenDTO> Login(ParticipantAuthDTO dto, CancellationToken cancellationToken);
+        Task<ParticipantDTO> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+        Task DeleteRefreshTokenAsync(ParticipantDTO dto, CancellationToken cancellationToken);
     }
 }

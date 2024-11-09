@@ -11,5 +11,6 @@ namespace Events.Domain.Models
         public string? Password {  get; set; }
         public byte[]? PasswordSalt { get; set; }
         public List<EventParticipant> EventParticipants { get; set; }
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

@@ -27,6 +27,7 @@ namespace Events.Infrastructure.Configuration.Entities
                 .IsRequired();
             builder.Property(p => p.BirthDate)
                 .IsRequired();
+            builder.Property(p => p.RefreshToken);
 
             builder.HasMany(p => p.EventParticipants)
                 .WithOne(e => e.Participant)

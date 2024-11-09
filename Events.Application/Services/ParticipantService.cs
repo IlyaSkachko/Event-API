@@ -1,9 +1,10 @@
 using AutoMapper;
 using Events.Application.DTO.Participant;
+using Events.Application.DTO.Token;
 using Events.Application.Services.Interfaces;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
+using System.Runtime.InteropServices;
 
 namespace Events.Application.Services
 {
@@ -22,18 +23,34 @@ namespace Events.Application.Services
             this.tokenService = tokenService;
         }
 
-        public async Task<string> Login(ParticipantAuthDTO dto, CancellationToken cancellationToken)
+        public async Task<TokenDTO> Login(ParticipantAuthDTO dto, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.ParticipantRepository.GetByEmailAsync(dto.Email, cancellationToken);
 
-            if (!hashService.VerifyPassword(dto.Password, participant.Password, participant.PasswordSalt))
+            var participantDTO = mapper.Map<ParticipantDTO>(participant);
+
+            if (!hashService.VerifyPassword(dto.Password, participantDTO.Password, participantDTO.PasswordSalt))
             {
                 throw new UnauthorizedAccessException();
             }
 
-            var token = tokenService.Generate(participant);
+            var accessExpires = DateTime.UtcNow.AddMinutes(15);
+            var refreshExpires = DateTime.UtcNow.AddDays(7);
 
-            return token;
+            var accessToken = tokenService.GenerateAccessToken(participantDTO, accessExpires);
+            var refreshToken = tokenService.GenerateRefreshToken(participantDTO, refreshExpires);
+
+            participant.RefreshToken = refreshToken; 
+
+            await unitOfWork.ParticipantRepository.UpdateAsync(participant, cancellationToken);
+
+            return new TokenDTO 
+            {
+                Access = accessToken,
+                AccessExpires = accessExpires,
+                Refresh = refreshToken,
+                RefreshExpires = refreshExpires
+            };
         }
 
 
@@ -83,10 +100,26 @@ namespace Events.Application.Services
 
             if (existingEntity != null)
             {
-                mapper.Map(dto, existingEntity);
+                mapper.Map<Participant>(dto);
 
                 await unitOfWork.ParticipantRepository.UpdateAsync(existingEntity, cancellationToken);
             }
+        }
+
+        public async Task<ParticipantDTO> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+        {
+            var participant = await unitOfWork.ParticipantRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+
+            return mapper.Map<ParticipantDTO>(participant);
+        }
+
+        public async Task DeleteRefreshTokenAsync(ParticipantDTO dto, CancellationToken cancellationToken)
+        {
+            var participant = await unitOfWork.ParticipantRepository.GetByIdAsync(dto.Id, cancellationToken);
+
+            participant.RefreshToken = "";
+
+            await unitOfWork.ParticipantRepository.UpdateAsync(participant, cancellationToken);
         }
     }
 }
