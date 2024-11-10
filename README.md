@@ -1,6 +1,6 @@
 # Start up
 
-The Events.WebAPI project being launched and database will be created automatically.
+The Events.WebAPI project being launched and database(MSSQL) will be created automatically.
 
 You don't have to register to view categories and events.
 
