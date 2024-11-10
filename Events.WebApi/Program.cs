@@ -30,6 +30,8 @@ namespace Events.WebApi
                 .AddApplication(cloudinarySettings)
                 .AddWebAPI(builder.Configuration);
 
+            builder.Services.AddMemoryCache();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -46,6 +48,14 @@ namespace Events.WebApi
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers.Add("Cache-Control", "public,max-age=600");
+                }
+            });
 
             app.MapControllers();
 

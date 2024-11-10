@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using CloudinaryDotNet.Actions;
 using Events.Application.DTO.Event;
 using Events.Application.DTO.EventParticipant;
 using Events.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Events.WebApi.Controllers
 {
@@ -16,13 +18,16 @@ namespace Events.WebApi.Controllers
         private readonly IEventParticipantService eventParticipantService;
         private readonly ICloudinaryService cloudinaryService;
         private readonly IMapper mapper;
+        private readonly IMemoryCache memoryCache;
 
-        public EventController(IEventService eventService, IEventParticipantService eventParticipantService, ICloudinaryService cloudinaryService, IMapper mapper)
+        public EventController(IEventService eventService, IEventParticipantService eventParticipantService, ICloudinaryService cloudinaryService, IMapper mapper,
+            IMemoryCache memoryCache)
         {
             this.eventService = eventService;
             this.eventParticipantService = eventParticipantService;
             this.cloudinaryService = cloudinaryService;
             this.mapper = mapper;
+            this.memoryCache = memoryCache;
         }
 
 
@@ -106,7 +111,16 @@ namespace Events.WebApi.Controllers
         [HttpPut("{eventId}/image")]
         public async Task<IActionResult> UpdateImageEvent(int eventId, IFormFile file, CancellationToken cancellationToken)
         {
-            var url = await cloudinaryService.UploadImage(file);
+            string cacheKey = $"event_{eventId}_image"; 
+            
+            if (!memoryCache.TryGetValue(cacheKey, out string url)) 
+            { 
+                url = await cloudinaryService.UploadImage(file);
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions() .SetSlidingExpiration(TimeSpan.FromMinutes(60)); 
+
+                memoryCache.Set(cacheKey, url, cacheEntryOptions); 
+            } 
 
             await eventService.AddImageAsync(eventId, url, cancellationToken);
 
