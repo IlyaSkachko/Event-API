@@ -9,6 +9,6 @@ namespace Events.Application.Services.Interfaces
         Task<CategoryDTO> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task UpdateAsync(CategoryDTO dto, CancellationToken cancellationToken);
         Task DeleteAsync(int id, CancellationToken cancellationToken);
-        Task InsertAsync(CategoryDTO dto, CancellationToken cancellationToken);
+        Task InsertAsync(CreateCategoryDTO dto, CancellationToken cancellationToken);
     }
 }

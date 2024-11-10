@@ -45,7 +45,7 @@ namespace Events.Application.Services
             return mapper.Map<CategoryDTO>(category);
         }
 
-        public async Task InsertAsync(CategoryDTO dto, CancellationToken cancellationToken)
+        public async Task InsertAsync(CreateCategoryDTO dto, CancellationToken cancellationToken)
         {
             var category = mapper.Map<Category>(dto);
             

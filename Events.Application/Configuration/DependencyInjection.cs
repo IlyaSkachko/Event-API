@@ -10,6 +10,7 @@ using Events.Application.Validation.Participant;
 using Events.Domain.Cloudinary;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
 
 namespace Events.Application.Configuration
 {
@@ -34,12 +35,19 @@ namespace Events.Application.Configuration
             services.AddScoped<ITokenService, TokenService>();
 
             services.AddScoped<IValidator<EventDTO>, EventValidator>();
-            services.AddScoped<IValidator<EventImageDTO>, EventImageValidator>();
             services.AddScoped<IValidator<CategoryDTO>, CategoryValidator>();
             services.AddScoped<IValidator<ParticipantAuthDTO>, ParticipantAuthValidator>();
             services.AddScoped<IValidator<ParticipantDTO>, ParticipantValidator>();
             services.AddScoped<IValidator<CreateParticipantDTO>, CreateParticipantValidator>();
             services.AddScoped<IValidator<UpdateParticipantDTO>, UpdateParticipantValidator>();
+            services.AddScoped<IValidator<UpdateEventDTO>, UpdateEventValidator>();
+            services.AddScoped<IValidator<CreateCategoryDTO>, CreateCategoryValidator>();
+
+            services.AddControllers()
+                .AddJsonOptions(options => 
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
             return services;
         }

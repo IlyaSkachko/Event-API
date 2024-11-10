@@ -10,6 +10,8 @@ namespace Events.Application.Mapper
         {
             CreateMap<Category, CategoryDTO>()
                 .ReverseMap();
+            CreateMap<Category, CreateCategoryDTO>()
+                .ReverseMap();
         }
     }
 }

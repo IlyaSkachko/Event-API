@@ -1,9 +1,9 @@
-﻿using Events.Application.DTO.Event;
+﻿using AutoMapper;
+using Events.Application.DTO.Event;
 using Events.Application.DTO.EventParticipant;
 using Events.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Events.WebApi.Controllers
 {
@@ -15,13 +15,14 @@ namespace Events.WebApi.Controllers
         private readonly IEventService eventService;
         private readonly IEventParticipantService eventParticipantService;
         private readonly ICloudinaryService cloudinaryService;
+        private readonly IMapper mapper;
 
-        public EventController(IEventService eventService, IEventParticipantService eventParticipantService, ICloudinaryService cloudinaryService)
+        public EventController(IEventService eventService, IEventParticipantService eventParticipantService, ICloudinaryService cloudinaryService, IMapper mapper)
         {
             this.eventService = eventService;
             this.eventParticipantService = eventParticipantService;
             this.cloudinaryService = cloudinaryService;
-            this.memoryCache = memoryCache;
+            this.mapper = mapper;
         }
 
 
@@ -69,7 +70,7 @@ namespace Events.WebApi.Controllers
             return Ok(await eventParticipantService.GetByIdAsync(eventId, cancellationToken));
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> AddEvent([FromBody] EventDTO eventDTO, CancellationToken cancellationToken)
         {
@@ -78,7 +79,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpPost("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> AddParticipant(int eventId, int participantId, CancellationToken cancellationToken)
         {
@@ -88,16 +89,20 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEvent([FromBody] EventDTO eventDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateEvent(int id, [FromBody] UpdateEventDTO eventDTO, CancellationToken cancellationToken)
         {
-            await eventService.UpdateAsync(eventDTO, cancellationToken);
+            var _event = mapper.Map<EventDTO>(eventDTO);
+
+            _event.Id = id;
+
+            await eventService.UpdateAsync(_event, cancellationToken);
 
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpPut("{eventId}/image")]
         public async Task<IActionResult> UpdateImageEvent(int eventId, IFormFile file, CancellationToken cancellationToken)
         {
@@ -108,7 +113,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id, CancellationToken cancellationToken)
         {
@@ -117,7 +122,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpDelete("{eventId}/participant/{participantId}")]
         public async Task<IActionResult> DeleteParticipantFromEvent(int eventId, int participantId, CancellationToken cancellationToken)
         {

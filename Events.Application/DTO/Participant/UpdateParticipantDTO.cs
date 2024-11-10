@@ -1,3 +1,6 @@
+using Events.Domain.Enums;
+using System.Text.Json.Serialization;
+
 namespace Events.Application.DTO.Participant
 {
     public class UpdateParticipantDTO
@@ -8,5 +11,7 @@ namespace Events.Application.DTO.Participant
         public DateTime BirthDate { get; set; }
         public string Email { get; set; }
         public string RefreshToken {  get; set; } = string.Empty;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Role Role { get; set; }
     }
 }

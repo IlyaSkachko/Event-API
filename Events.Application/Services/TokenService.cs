@@ -21,7 +21,12 @@ namespace Events.Application.Services
 
         private string Generate(ParticipantDTO participant, DateTime expiresTime)
         {
-            Claim[] claims = [new("participantEmail", participant.Email), new("participantName", participant.Name + " " + participant.Surname)];
+            Claim[] claims = 
+            [
+                new("participantEmail", participant.Email), 
+                new("participantName", participant.Name + " " + participant.Surname),
+                new("Role", participant.Role.ToString())
+            ];
 
             var jwt = new JwtSecurityToken(
                    issuer: "EventServer",

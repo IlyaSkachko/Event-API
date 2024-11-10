@@ -10,7 +10,7 @@ namespace Events.Application.Mapper
         {
             CreateMap<Event, EventDTO>()
                 .ReverseMap();
-            CreateMap<Event, EventImageDTO>()
+            CreateMap<EventDTO, UpdateEventDTO>()
                 .ReverseMap();
         }
     }

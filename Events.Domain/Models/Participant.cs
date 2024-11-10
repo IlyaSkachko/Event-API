@@ -1,3 +1,5 @@
+using Events.Domain.Enums;
+
 namespace Events.Domain.Models
 {
     public class Participant
@@ -10,6 +12,7 @@ namespace Events.Domain.Models
         public string Email {  get; set; }
         public string? Password {  get; set; }
         public byte[]? PasswordSalt { get; set; }
+        public Role Role { get; set; }
         public List<EventParticipant> EventParticipants { get; set; }
         public string RefreshToken { get; set; } = string.Empty;
     }

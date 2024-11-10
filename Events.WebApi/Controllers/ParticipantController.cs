@@ -1,12 +1,8 @@
-﻿using AutoMapper;
-using Events.Application.DTO.Participant;
+﻿using Events.Application.DTO.Participant;
 using Events.Application.Services.Interfaces;
-using Events.Domain.Models;
-using Events.Infrastructure.UOW;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using System.Threading;
 
 namespace Events.WebApi.Controllers
 {
@@ -16,13 +12,11 @@ namespace Events.WebApi.Controllers
     {
         private readonly IParticipantService participantService;
         private readonly ITokenService tokenService;
-        private readonly IMapper mapper;
 
-        public ParticipantController(IParticipantService participantService, ITokenService tokenService, IMapper mapper)
+        public ParticipantController(IParticipantService participantService, ITokenService tokenService)
         {
             this.participantService = participantService;
             this.tokenService = tokenService;
-            this.mapper = mapper;
         }
 
         [HttpPost("/login")]
@@ -97,6 +91,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize("AdminOrUserPolicy")]
         [HttpDelete("/logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
@@ -125,19 +120,20 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
+        [Authorize("AdminPolicy")]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
             return Ok(await participantService.GetAllAsync(pageNumber, pageSize, cancellationToken));
         }
 
+        [Authorize("AdminPolicy")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
             return Ok(await participantService.GetByIdAsync(id, cancellationToken));
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddParticipant([FromBody] CreateParticipantDTO participant, CancellationToken cancellationToken)
         {
@@ -146,7 +142,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("UserPolicy")]
         [HttpPut]
         public async Task<IActionResult> UpdateParticipant([FromBody] UpdateParticipantDTO participant, CancellationToken cancellationToken)
         {
@@ -155,7 +151,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminOrUserPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParticipant(int id, CancellationToken cancellationToken)
         {

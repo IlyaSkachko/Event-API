@@ -1,5 +1,3 @@
-
-
 using Events.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -28,6 +26,9 @@ namespace Events.Infrastructure.Configuration.Entities
             builder.Property(p => p.BirthDate)
                 .IsRequired();
             builder.Property(p => p.RefreshToken);
+            builder.Property(p => p.Role)
+                .IsRequired()
+                .HasConversion<string>();
 
             builder.HasMany(p => p.EventParticipants)
                 .WithOne(e => e.Participant)

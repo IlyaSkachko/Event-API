@@ -28,25 +28,26 @@ namespace Events.WebApi.Controllers
             return Ok(await categoryService.GetByIdAsync(id, cancellationToken));
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpPost]
-        public async Task<IActionResult> AddCategory([FromBody] CategoryDTO category, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddCategory([FromBody] CreateCategoryDTO category, CancellationToken cancellationToken)
         {
             await categoryService.InsertAsync(category, cancellationToken);
 
             return Ok();
         }
 
-        [Authorize]
-        [HttpPut]
-        public async Task<IActionResult> UpdateCategory([FromBody] CategoryDTO category, CancellationToken cancellationToken)
+        [Authorize("AdminPolicy")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] string name, CancellationToken cancellationToken)
         {
-            await categoryService.UpdateAsync(category, cancellationToken);
+
+            await categoryService.UpdateAsync(new CategoryDTO { Id = id, Name = name}, cancellationToken);
 
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id, CancellationToken cancellationToken)
         {

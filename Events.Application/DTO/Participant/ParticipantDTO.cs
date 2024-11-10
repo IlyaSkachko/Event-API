@@ -1,3 +1,6 @@
+using Events.Domain.Enums;
+using System.Text.Json.Serialization;
+
 namespace Events.Application.DTO.Participant
 {
     public class ParticipantDTO
@@ -10,5 +13,8 @@ namespace Events.Application.DTO.Participant
         public string Email { get; set; }
         public string Password { get; set; }
         public byte[] PasswordSalt { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Role Role { get; set; }
     }
 }

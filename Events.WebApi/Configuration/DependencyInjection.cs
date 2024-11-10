@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Events.Domain.Enums;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -31,7 +32,24 @@ namespace Events.WebApi.Configuration
                         };
                     });
 
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy =>
+                {
+                    policy.RequireClaim("Role", Role.ADMIN.ToString());
+                });
+
+                options.AddPolicy("UserPolicy", policy =>
+                {
+                    policy.RequireClaim("Role", Role.USER.ToString());
+                });
+
+                options.AddPolicy("AdminOrUserPolicy", policy => 
+                { 
+                    policy.RequireAssertion(context => context.User.HasClaim(c => c.Type == "Role" && (c.Value == Role.ADMIN.ToString() || c.Value == Role.USER.ToString()))); 
+                });
+
+            });
 
             return services;
         }
