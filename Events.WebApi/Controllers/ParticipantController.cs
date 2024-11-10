@@ -19,7 +19,7 @@ namespace Events.WebApi.Controllers
             this.tokenService = tokenService;
         }
 
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] ParticipantAuthDTO dto, CancellationToken cancellationToken)
         {
             var tokens = await participantService.Login(dto, cancellationToken);
@@ -43,7 +43,7 @@ namespace Events.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPut("/refresh")]
+        [HttpPut("refresh")]
         public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
         {
             var refreshToken = Request.Cookies["refresh-token"];
@@ -92,7 +92,7 @@ namespace Events.WebApi.Controllers
         }
 
         [Authorize("AdminOrUserPolicy")]
-        [HttpDelete("/logout")]
+        [HttpDelete("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
             var refreshToken = Request.Cookies["refresh-token"];
