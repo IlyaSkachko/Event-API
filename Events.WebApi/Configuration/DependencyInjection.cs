@@ -46,7 +46,8 @@ namespace Events.WebApi.Configuration
 
                 options.AddPolicy("AdminOrUserPolicy", policy => 
                 { 
-                    policy.RequireAssertion(context => context.User.HasClaim(c => c.Type == "Role" && (c.Value == Role.ADMIN.ToString() || c.Value == Role.USER.ToString()))); 
+                    policy.RequireAssertion(context => context.User.HasClaim(claim => claim.Type == "Role" && (claim.Value == Role.ADMIN.ToString() ||
+                    claim.Value == Role.USER.ToString()))); 
                 });
 
             });

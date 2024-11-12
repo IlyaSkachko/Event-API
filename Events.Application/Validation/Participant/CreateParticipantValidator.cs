@@ -1,4 +1,5 @@
 using Events.Application.DTO.Participant;
+using Events.Domain.Models;
 using FluentValidation;
 
 namespace Events.Application.Validation.Participant
@@ -7,34 +8,34 @@ namespace Events.Application.Validation.Participant
     {
         public CreateParticipantValidator() 
         {
-            RuleFor(u => u.Name)
+            RuleFor(participant => participant.Name)
                 .NotEmpty()
                 .WithMessage("Name can't be empty.")
                 .MinimumLength(2)
                 .WithMessage("Name must contain at least 2 characters.");
 
-            RuleFor(u => u.Surname)
+            RuleFor(participant => participant.Surname)
                 .NotEmpty()
                 .WithMessage("Surname can't be empty.")
                 .MinimumLength(2)
                 .WithMessage("Surname must contain at least 2 characters.");
 
-            RuleFor(u => u.BirthDate)
+            RuleFor(participant => participant.BirthDate)
                 .NotEmpty()
                 .WithMessage("Birth date can't be empty.")
                 .LessThan(DateTime.Now)
                 .WithMessage("Birth date must be in the past.");
 
-            RuleFor(u => u.RegistrationDate)
+            RuleFor(participant => participant.RegistrationDate)
                 .NotEmpty()
                 .WithMessage("Registration date can't be empty.")
-                .GreaterThanOrEqualTo(u => u.BirthDate)
+                .GreaterThanOrEqualTo(participant => participant.BirthDate)
                 .WithMessage("Registration date must be on or after birth date.")
-                .Must((u, registrationDate) =>
-                    (registrationDate - u.BirthDate).TotalDays >= 365 * 16)
+                .Must((participant, registrationDate) =>
+                    (registrationDate - participant.BirthDate).TotalDays >= 365 * 16)
                 .WithMessage("User must be at least 16 years old.");
 
-            RuleFor(u => u.Email)
+            RuleFor(participant => participant.Email)
                 .NotEmpty()
                 .WithMessage("Email can't be empty.")
                 .EmailAddress()
@@ -42,7 +43,7 @@ namespace Events.Application.Validation.Participant
                 .MinimumLength(5)
                 .WithMessage("Email must contain at least 5 characters.");
 
-            RuleFor(e => e.Password)
+            RuleFor(participant => participant.Password)
                 .NotEmpty()
                 .WithMessage("The password can't be empty")
                 .MinimumLength(8)

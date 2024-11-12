@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Events.Application.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 
@@ -19,9 +20,9 @@ namespace Events.WebApi.Middleware
             {
                 await next.Invoke(context);
             }
-            catch (Exception ex)
+            catch (Exception exeption)
             {
-                await HandleExeptionAsync(context, ex);
+                await HandleExeptionAsync(context, exeption);
             }
         }
 
@@ -29,14 +30,37 @@ namespace Events.WebApi.Middleware
         {
             var problemDetails = new ProblemDetails();
 
-            problemDetails.Status = (int)HttpStatusCode.BadRequest;
-            problemDetails.Title = exception.Message;
+            switch (exception)
+            {
+                case NotFoundException:
+                    problemDetails.Status = (int)HttpStatusCode.NotFound;
+                    problemDetails.Title = "Resource not found";
+                    break;
+                case AlreadyExistException:
+                    problemDetails.Status = (int)HttpStatusCode.Conflict;
+                    problemDetails.Title = "Resource already exists";
+                    break;
+                case BadRequestException:
+                    problemDetails.Status = (int)HttpStatusCode.BadRequest;
+                    problemDetails.Title = "Bad request";
+                    break;
+                case UnauthorizedAccessException:
+                    problemDetails.Status = (int)HttpStatusCode.Unauthorized;
+                    problemDetails.Title = "Unauthorized";
+                    break;
+                default:
+                    problemDetails.Status = (int)HttpStatusCode.InternalServerError;
+                    problemDetails.Title = "An unexpected error occurred";
+                    break;
+            }
+
+            problemDetails.Detail = exception.Message;
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = problemDetails.Status.Value;
 
             var jsonProblemDetails = JsonSerializer.Serialize(problemDetails);
-            
+
             await context.Response.WriteAsync(jsonProblemDetails);
         }
     }

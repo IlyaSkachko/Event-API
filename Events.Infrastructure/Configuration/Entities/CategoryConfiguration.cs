@@ -19,13 +19,13 @@ namespace Events.Infrastructure.Configuration.Entities
         {
             builder.ToTable(nameof(Category)).HasKey(c => c.Id);
 
-            builder.Property(c => c.Name)
+            builder.Property(category => category.Name)
                 .HasMaxLength(50)
                 .IsRequired();
 
-            builder.HasMany(c => c.Events)
-                .WithOne(e => e.Category)
-                .HasForeignKey(e => e.CategoryId);
+            builder.HasMany(category => category.Events)
+                .WithOne(_event => _event.Category)
+                .HasForeignKey(_event => _event.CategoryId);
         }
     }
 }

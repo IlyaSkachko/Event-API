@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.WebApi", "Events.WebApi\Events.WebApi.csproj", "{8FB34F22-49D2-4A8D-AA16-062BFC539FBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events.WebApi", "Events.WebApi\Events.WebApi.csproj", "{8FB34F22-49D2-4A8D-AA16-062BFC539FBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Infrastructure", "Events.Infrastructure\Events.Infrastructure.csproj", "{2B4A9A40-2521-4914-BC36-59852EFC0B20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events.Infrastructure", "Events.Infrastructure\Events.Infrastructure.csproj", "{2B4A9A40-2521-4914-BC36-59852EFC0B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Domain", "Events.Domain\Events.Domain.csproj", "{ADAE9F60-A967-4BA2-8B9D-EDCF0CACCAD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events.Domain", "Events.Domain\Events.Domain.csproj", "{ADAE9F60-A967-4BA2-8B9D-EDCF0CACCAD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Application", "Events.Application\Events.Application.csproj", "{5D7B9378-4143-467D-8DBB-C0CFCCD45F83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events.Application", "Events.Application\Events.Application.csproj", "{5D7B9378-4143-467D-8DBB-C0CFCCD45F83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest.CategoryModel", "UnitTest.CategoryModel\UnitTest.CategoryModel.csproj", "{BD36F112-A481-4FC8-A3EF-2DB9EFB2BE00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5D7B9378-4143-467D-8DBB-C0CFCCD45F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D7B9378-4143-467D-8DBB-C0CFCCD45F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D7B9378-4143-467D-8DBB-C0CFCCD45F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD36F112-A481-4FC8-A3EF-2DB9EFB2BE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD36F112-A481-4FC8-A3EF-2DB9EFB2BE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD36F112-A481-4FC8-A3EF-2DB9EFB2BE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD36F112-A481-4FC8-A3EF-2DB9EFB2BE00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

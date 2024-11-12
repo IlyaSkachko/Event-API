@@ -11,30 +11,30 @@ namespace Events.Infrastructure.Configuration.Entities
         {   
             builder.ToTable(nameof(Event)).HasKey(e => e.Id);
 
-            builder.Property(e => e.Id)
+            builder.Property(_event => _event.Id)
                 .IsRequired();
-            builder.Property(e => e.Name)
+            builder.Property(_event => _event.Name)
                 .HasMaxLength(100)
                 .IsRequired();
-            builder.Property(e => e.Description)
+            builder.Property(_event => _event.Description)
                 .HasMaxLength(500)
                 .IsRequired();
-            builder.Property(e => e.EventDate)
+            builder.Property(_event => _event.EventDate)
                 .IsRequired();
-            builder.Property(e => e.Location)
+            builder.Property(_event => _event.Location)
                 .HasMaxLength(200)
                 .IsRequired();
-            builder.Property(e => e.CategoryId)
+            builder.Property(_event => _event.CategoryId)
                 .IsRequired();
-            builder.Property(e => e.MaxParticipants)
+            builder.Property(_event => _event.MaxParticipants)
                 .IsRequired();
 
-            builder.HasOne(e => e.Category)
-                .WithMany(c => c.Events)
-                .HasForeignKey(e => e.CategoryId);
-            builder.HasMany(e => e.EventParticipants)
-                .WithOne(ep => ep.Event)
-                .HasForeignKey(ep => ep.EventId);
+            builder.HasOne(_event => _event.Category)
+                .WithMany(category => category.Events)
+                .HasForeignKey(_event => _event.CategoryId);
+            builder.HasMany(_event => _event.EventParticipants)
+                .WithOne(eventParticipant => eventParticipant.Event)
+                .HasForeignKey(eventParticipant => eventParticipant.EventId);
         }
     }
 }

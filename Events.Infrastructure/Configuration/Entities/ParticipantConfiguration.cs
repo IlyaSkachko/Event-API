@@ -10,29 +10,29 @@ namespace Events.Infrastructure.Configuration.Entities
         {
             builder.ToTable(nameof(Participant)).HasKey(p => p.Id);
 
-            builder.Property(p => p.Name)
+            builder.Property(participant => participant.Name)
                 .HasMaxLength(50)
                 .IsRequired();
-            builder.Property(p => p.Surname)
+            builder.Property(participant => participant.Surname)
                 .HasMaxLength(50)
                 .IsRequired();
-            builder.Property(p => p.Password)
+            builder.Property(participant => participant.Password)
                 .IsRequired();
-            builder.Property(p => p.Email)
+            builder.Property(participant => participant.Email)
                 .HasMaxLength(100)
                 .IsRequired();
-            builder.Property(p => p.RegistrationDate)
+            builder.Property(participant => participant.RegistrationDate)
                 .IsRequired();
-            builder.Property(p => p.BirthDate)
+            builder.Property(participant => participant.BirthDate)
                 .IsRequired();
-            builder.Property(p => p.RefreshToken);
-            builder.Property(p => p.Role)
+            builder.Property(participant => participant.RefreshToken);
+            builder.Property(participant => participant.Role)
                 .IsRequired()
                 .HasConversion<string>();
 
-            builder.HasMany(p => p.EventParticipants)
-                .WithOne(e => e.Participant)
-                .HasForeignKey(e => e.ParticipantId);
+            builder.HasMany(participant => participant.EventParticipants)
+                .WithOne(_event => _event.Participant)
+                .HasForeignKey(_event => _event.ParticipantId);
         }
     }
 }

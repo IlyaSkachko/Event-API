@@ -1,5 +1,10 @@
 ﻿using Events.Application.DTO.Participant;
-using Events.Application.Services.Interfaces;
+using Events.Application.UseCases.ParticipantUseCase.Delete.Interfaces;
+using Events.Application.UseCases.ParticipantUseCase.Get.Interfaces;
+using Events.Application.UseCases.ParticipantUseCase.Insert.Interfaces;
+using Events.Application.UseCases.ParticipantUseCase.Login.Interfaces;
+using Events.Application.UseCases.ParticipantUseCase.Update.Interfaces;
+using Events.Application.UseCases.TokenUseCase.Generate.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,19 +15,37 @@ namespace Events.WebApi.Controllers
     [ApiController]
     public class ParticipantController : Controller
     {
-        private readonly IParticipantService participantService;
-        private readonly ITokenService tokenService;
+        private readonly IGetAllParticipantUseCase getAllParticipantUseCase;
+        private readonly IGetByIdParticipantUseCase getByIdParticipantUseCase;
+        private readonly IGetByRefreshTokenParticipantUseCase getByRefreshTokenParticipantUseCase;
+        private readonly IInsertParticipantUseCase insertParticipantUseCase;
+        private readonly IUpdateParticipantUseCase updateParticipantUseCase;
+        private readonly IDeleteParticipantUseCase deleteParticipantUseCase;
+        private readonly IDeleteRefreshTokenParticipantUseCase deleteRefreshTokenParticipantUseCase;
+        private readonly ILoginParticipantUseCase loginParticipantUseCase;
+        private readonly ITokenGenerateUseCase tokenGenerateUseCase;
 
-        public ParticipantController(IParticipantService participantService, ITokenService tokenService)
+        public ParticipantController(IGetAllParticipantUseCase getAllParticipantUseCase, IGetByIdParticipantUseCase getByIdParticipantUseCase, 
+            IGetByRefreshTokenParticipantUseCase getByRefreshTokenParticipantUseCase, 
+            IInsertParticipantUseCase insertParticipantUseCase, IUpdateParticipantUseCase updateParticipantUseCase,
+            IDeleteParticipantUseCase deleteParticipantUseCase, IDeleteRefreshTokenParticipantUseCase deleteRefreshTokenParticipantUseCase,
+            ILoginParticipantUseCase loginParticipantUseCase, ITokenGenerateUseCase tokenGenerateUseCase)
         {
-            this.participantService = participantService;
-            this.tokenService = tokenService;
+            this.getAllParticipantUseCase = getAllParticipantUseCase;
+            this.getByIdParticipantUseCase = getByIdParticipantUseCase;
+            this.getByRefreshTokenParticipantUseCase = getByRefreshTokenParticipantUseCase;
+            this.insertParticipantUseCase = insertParticipantUseCase;
+            this.updateParticipantUseCase = updateParticipantUseCase;
+            this.deleteParticipantUseCase = deleteParticipantUseCase;
+            this.deleteRefreshTokenParticipantUseCase = deleteRefreshTokenParticipantUseCase;
+            this.loginParticipantUseCase = loginParticipantUseCase;
+            this.tokenGenerateUseCase = tokenGenerateUseCase;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] ParticipantAuthDTO dto, CancellationToken cancellationToken)
         {
-            var tokens = await participantService.Login(dto, cancellationToken);
+            var tokens = await loginParticipantUseCase.ExecuteAsync(dto, cancellationToken);
 
             var accessCookieOptions = new CookieOptions
             {
@@ -53,7 +76,7 @@ namespace Events.WebApi.Controllers
                 throw new UnauthorizedAccessException("Refresh token doesn't exist");
             }
 
-            var participant = await participantService.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+            var participant = await getByRefreshTokenParticipantUseCase.ExecuteAsync(refreshToken, cancellationToken);
 
             if (participant is null)
             {
@@ -72,14 +95,14 @@ namespace Events.WebApi.Controllers
                 Response.Cookies.Delete("access-token");
                 Response.Cookies.Delete("refresh-token");
 
-                await participantService.DeleteRefreshTokenAsync(participant, cancellationToken);
+                await deleteRefreshTokenParticipantUseCase.ExecuteAsync(participant, cancellationToken);
 
                 throw new UnauthorizedAccessException("Refresh token has expired");
             }
 
             var accessExpires = DateTime.UtcNow.AddMinutes(15);
 
-            var newAccessToken = tokenService.GenerateAccessToken(participant, accessExpires);
+            var newAccessToken = tokenGenerateUseCase.Execute(participant, accessExpires);
             var accessCookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -102,7 +125,7 @@ namespace Events.WebApi.Controllers
                 throw new UnauthorizedAccessException("Logout has already completed");
             }
 
-            var participant = await participantService.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+            var participant = await getByRefreshTokenParticipantUseCase.ExecuteAsync(refreshToken, cancellationToken);
 
             if (participant is null)
             {
@@ -112,7 +135,7 @@ namespace Events.WebApi.Controllers
                 return Ok();
             }
 
-            await participantService.DeleteRefreshTokenAsync(participant, cancellationToken);
+            await deleteRefreshTokenParticipantUseCase.ExecuteAsync(participant, cancellationToken);
 
             Response.Cookies.Delete("access-token");
             Response.Cookies.Delete("refresh-token");
@@ -124,20 +147,20 @@ namespace Events.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
-            return Ok(await participantService.GetAllAsync(pageNumber, pageSize, cancellationToken));
+            return Ok(await getAllParticipantUseCase.ExecuteAsync(pageNumber, pageSize, cancellationToken));
         }
 
         [Authorize("AdminPolicy")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
-            return Ok(await participantService.GetByIdAsync(id, cancellationToken));
+            return Ok(await getByIdParticipantUseCase.ExecuteAsync(id, cancellationToken));
         }
 
         [HttpPost]
         public async Task<IActionResult> AddParticipant([FromBody] CreateParticipantDTO participant, CancellationToken cancellationToken)
         {
-            await participantService.InsertAsync(participant, cancellationToken);
+            await insertParticipantUseCase.ExecuteAsync(participant, cancellationToken);
 
             return Ok();
         }
@@ -146,7 +169,7 @@ namespace Events.WebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateParticipant([FromBody] UpdateParticipantDTO participant, CancellationToken cancellationToken)
         {
-            await participantService.UpdateAsync(participant, cancellationToken);
+            await updateParticipantUseCase.ExecuteAsync(participant, cancellationToken);
 
             return Ok();
         }
@@ -155,7 +178,7 @@ namespace Events.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParticipant(int id, CancellationToken cancellationToken)
         {
-            await participantService.DeleteAsync(id, cancellationToken);
+            await deleteParticipantUseCase.ExecuteAsync(id, cancellationToken);
 
             return Ok();
         }

@@ -2,7 +2,6 @@ using Events.Domain.Models;
 using Events.Infrastructure.Configuration.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Events.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext

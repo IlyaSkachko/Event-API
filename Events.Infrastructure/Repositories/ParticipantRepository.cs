@@ -13,12 +13,12 @@ namespace Events.Infrastructure.Repositories
 
         public async Task<Participant> GetByEmailAsync(string email, CancellationToken cancellationToken)
         {
-            return await table.Where(p => p.Email.Equals(email)).FirstOrDefaultAsync(cancellationToken);
+            return await table.Where(participant => participant.Email.Equals(email)).FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<Participant> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
         {
-            return await dbContext.Participants.FirstOrDefaultAsync(p => p.RefreshToken.Equals(refreshToken), cancellationToken);
+            return await dbContext.Participants.FirstOrDefaultAsync(participant => participant.RefreshToken.Equals(refreshToken), cancellationToken);
         }
     }
 }

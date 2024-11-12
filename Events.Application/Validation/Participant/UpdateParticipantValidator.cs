@@ -7,25 +7,25 @@ namespace Events.Application.Validation.Participant
     {
         public UpdateParticipantValidator() 
         {
-            RuleFor(u => u.Name)
+            RuleFor(participant => participant.Name)
                 .NotEmpty()
                 .WithMessage("Name can't be empty.")
                 .MinimumLength(2)
                 .WithMessage("Name must contain at least 2 characters.");
 
-            RuleFor(u => u.Surname)
+            RuleFor(participant => participant.Surname)
                 .NotEmpty()
                 .WithMessage("Surname can't be empty.")
                 .MinimumLength(2)
                 .WithMessage("Surname must contain at least 2 characters.");
 
-            RuleFor(u => u.BirthDate)
+            RuleFor(participant => participant.BirthDate)
                 .NotEmpty()
                 .WithMessage("Birth date can't be empty.")
                 .LessThan(DateTime.Now)
                 .WithMessage("Birth date must be in the past.");
 
-            RuleFor(u => u.Email)
+            RuleFor(participant => participant.Email)
                 .NotEmpty()
                 .WithMessage("Email can't be empty.")
                 .EmailAddress()

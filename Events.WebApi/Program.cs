@@ -1,7 +1,5 @@
-using AutoMapper;
 using Events.Application.Configuration;
-using Events.Application.Services.Interfaces;
-using Events.Domain.Cloudinary;
+using Events.Application.Configuration.Cloudinary;
 using Events.Infrastructure.Configuration;
 using Events.WebApi.Configuration;
 using Events.WebApi.Middleware;
@@ -14,10 +12,8 @@ namespace Events.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -34,7 +30,6 @@ namespace Events.WebApi
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -48,14 +43,6 @@ namespace Events.WebApi
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers.Add("Cache-Control", "public,max-age=600");
-                }
-            });
 
             app.MapControllers();
 

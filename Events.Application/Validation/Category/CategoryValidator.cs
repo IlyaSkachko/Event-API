@@ -7,12 +7,12 @@ namespace Events.Application.Validation.Category
     {
         public CategoryValidator() 
         {
-            RuleFor(c => c.Name)
+            RuleFor(category => category.Name)
                 .NotEmpty()
                 .WithMessage("The category name can't be empty")
                 .MinimumLength(2)
                 .WithMessage("The category name must contain at least 2 characters.")
-                .Must(c => c.All(char.IsLetter))
+                .Must(category => category.All(char.IsLetter))
                 .WithMessage("All characters must be letters");
         }
     }

@@ -13,12 +13,13 @@ namespace Events.Infrastructure.Repositories
 
         public async Task<EventParticipant> GetByIdAsync(int eventId, int participantId, CancellationToken cancellationToken)
         {
-            return await table.Where(e => e.EventId == eventId && e.ParticipantId == participantId).FirstOrDefaultAsync(cancellationToken);
+            return await table.Where(entityParticipant => entityParticipant.EventId == eventId && entityParticipant.ParticipantId == participantId)
+                              .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<List<EventParticipant>> GetByEventIdAsync(int eventId, CancellationToken cancellationToken)
         {
-            return await table.Where(ep => ep.EventId == eventId).ToListAsync(cancellationToken);
+            return await table.Where(entityParticipant => entityParticipant.EventId == eventId).ToListAsync(cancellationToken);
         }
     }
 }
