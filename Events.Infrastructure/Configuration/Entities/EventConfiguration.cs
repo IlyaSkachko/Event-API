@@ -9,7 +9,7 @@ namespace Events.Infrastructure.Configuration.Entities
     {
         public void Configure(EntityTypeBuilder<Event> builder)
         {   
-            builder.ToTable(nameof(Event)).HasKey(e => e.Id);
+            builder.ToTable(nameof(Event)).HasKey(_event => _event.Id);
 
             builder.Property(_event => _event.Id)
                 .IsRequired();

@@ -8,7 +8,7 @@ namespace Events.Infrastructure.Configuration.Entities
     {
         public void Configure(EntityTypeBuilder<Participant> builder)
         {
-            builder.ToTable(nameof(Participant)).HasKey(p => p.Id);
+            builder.ToTable(nameof(Participant)).HasKey(participant => participant.Id);
 
             builder.Property(participant => participant.Name)
                 .HasMaxLength(50)
