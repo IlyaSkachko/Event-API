@@ -1,7 +1,7 @@
 using AutoMapper;
 using Events.Application.DTO.Category;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.CategoryUseCase.Get.Interfaces;
+using Events.Application.Interfaces.UseCase.Category;
 using Events.Domain.Interfaces.UOW;
 
 namespace Events.Application.UseCases.CategoryUseCase.Get
@@ -19,16 +19,9 @@ namespace Events.Application.UseCases.CategoryUseCase.Get
 
         public async Task<CategoryDTO> ExecuteAsync(int id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var category = await unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
+            var category = await unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
 
-                return mapper.Map<CategoryDTO>(category);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException("Category is not found");
-            }
+            return mapper.Map<CategoryDTO>(category);
         }
     }
 }

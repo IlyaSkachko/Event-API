@@ -1,7 +1,9 @@
 using AutoMapper;
 using Events.Application.DTO.Category;
+using Events.Application.DTO.Page;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.CategoryUseCase.Get.Interfaces;
+using Events.Application.Interfaces.UseCase.Category;
+using Events.Application.Validation.Page;
 using Events.Domain.Interfaces.UOW;
 
 namespace Events.Application.UseCases.CategoryUseCase.Get
@@ -19,12 +21,18 @@ namespace Events.Application.UseCases.CategoryUseCase.Get
 
         public async Task<IEnumerable<CategoryDTO>> ExecuteAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var collection = await unitOfWork.CategoryRepository.GetAllAsync(pageNumber, pageSize, cancellationToken);
+            var pageDTO = new PageDTO() { PageNumber = pageNumber, PageSize = pageSize };
 
-            if (collection is null)
+            var validator = new PageValidator();
+
+            var validationResult = validator.Validate(pageDTO);
+
+            if (!validationResult.IsValid)
             {
-                throw new NotFoundException("Categories are not found");
+                throw new BadRequestException(validationResult.ToString());
             }
+
+            var collection = await unitOfWork.CategoryRepository.GetAllAsync(pageDTO.PageNumber, pageDTO.PageSize, cancellationToken);
 
             return mapper.Map<IEnumerable<CategoryDTO>>(collection);
         }

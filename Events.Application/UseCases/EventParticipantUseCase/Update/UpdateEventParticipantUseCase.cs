@@ -1,7 +1,7 @@
 using AutoMapper;
 using Events.Application.DTO.EventParticipant;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.EventParticipantUseCase.Update.Interfaces;
+using Events.Application.Interfaces.UseCase.EventParticipant;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
 
@@ -20,21 +20,11 @@ namespace Events.Application.UseCases.EventParticipantUseCase.Update
 
         public async Task ExecuteAsync(EventParticipantDTO dto, CancellationToken cancellationToken)
         {
-            if (dto is null)
-            {
-                throw new BadRequestException("Event participant data is missing");
-            }
+            var obj = mapper.Map<EventParticipant>(dto);
 
-            try
-            {
-                var obj = mapper.Map<EventParticipant>(dto);
+            await unitOfWork.EventParticipantRepository.UpdateAsync(obj, cancellationToken);
 
-                await unitOfWork.EventParticipantRepository.UpdateAsync(obj, cancellationToken);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException("Invalid update operation! This event participant does not exist");
-            }
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

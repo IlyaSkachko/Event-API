@@ -1,8 +1,11 @@
 ﻿using Events.Application.DTO.Category;
-using Events.Application.UseCases.CategoryUseCase.Delete.Interfaces;
-using Events.Application.UseCases.CategoryUseCase.Get.Interfaces;
-using Events.Application.UseCases.CategoryUseCase.Insert.Interfaces;
-using Events.Application.UseCases.CategoryUseCase.Update.Interfaces;
+using Events.Application.DTO.Page;
+using Events.Application.Exceptions;
+using Events.Application.Interfaces.UseCase.Category;
+using Events.Application.Validation.Category;
+using Events.Application.Validation.EventParticipant;
+using Events.Application.Validation.Page;
+using Events.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +33,7 @@ namespace Events.WebApi.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
-        {
+        {  
             return Ok(await getAllCategoryUseCase.ExecuteAsync(pageNumber, pageSize, cancellationToken));
         }
 
@@ -44,6 +47,11 @@ namespace Events.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCategory([FromBody] CreateCategoryDTO category, CancellationToken cancellationToken)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await insertCategoryUseCase.ExecuteAsync(category, cancellationToken);
 
             return Ok();
@@ -53,8 +61,9 @@ namespace Events.WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] string name, CancellationToken cancellationToken)
         {
+            var categoryDTO = new CategoryDTO { Id = id, Name = name };
 
-            await updateCategoryUseCase.ExecuteAsync(new CategoryDTO { Id = id, Name = name}, cancellationToken);
+            await updateCategoryUseCase.ExecuteAsync(categoryDTO, cancellationToken);
 
             return Ok();
         }

@@ -1,9 +1,9 @@
 using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.CloudinaryUseCase.Upload.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Events.Application.Configuration.Cloudinary;
+using Events.Application.Interfaces.UseCase.Cloudinary;
 
 namespace Events.Application.UseCases.CloudinaryUseCase.Upload
 {

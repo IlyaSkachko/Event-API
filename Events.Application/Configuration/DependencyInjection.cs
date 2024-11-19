@@ -1,55 +1,46 @@
 using Events.Application.Configuration.Cloudinary;
 using Events.Application.DTO.Category;
 using Events.Application.DTO.Event;
+using Events.Application.DTO.EventParticipant;
+using Events.Application.DTO.Page;
 using Events.Application.DTO.Participant;
+using Events.Application.DTO.Token;
+using Events.Application.Interfaces.UseCase.Category;
+using Events.Application.Interfaces.UseCase.Cloudinary;
+using Events.Application.Interfaces.UseCase.Event;
+using Events.Application.Interfaces.UseCase.EventParticipant;
+using Events.Application.Interfaces.UseCase.Hash;
+using Events.Application.Interfaces.UseCase.Participant;
+using Events.Application.Interfaces.UseCase.Token;
 using Events.Application.Mapper;
-using Events.Application.UseCases.CacheUseCase.ImageCache;
-using Events.Application.UseCases.CacheUseCase.ImageCache.Interfaces;
 using Events.Application.UseCases.CategoryUseCase.Delete;
-using Events.Application.UseCases.CategoryUseCase.Delete.Interfaces;
 using Events.Application.UseCases.CategoryUseCase.Get;
-using Events.Application.UseCases.CategoryUseCase.Get.Interfaces;
 using Events.Application.UseCases.CategoryUseCase.Insert;
-using Events.Application.UseCases.CategoryUseCase.Insert.Interfaces;
 using Events.Application.UseCases.CategoryUseCase.Update;
-using Events.Application.UseCases.CategoryUseCase.Update.Interfaces;
 using Events.Application.UseCases.CloudinaryUseCase.Upload;
-using Events.Application.UseCases.CloudinaryUseCase.Upload.Interfaces;
 using Events.Application.UseCases.EventParticipantUseCase.Delete;
-using Events.Application.UseCases.EventParticipantUseCase.Delete.Interfaces;
 using Events.Application.UseCases.EventParticipantUseCase.Get;
-using Events.Application.UseCases.EventParticipantUseCase.Get.Interfaces;
 using Events.Application.UseCases.EventParticipantUseCase.Insert;
-using Events.Application.UseCases.EventParticipantUseCase.Insert.Interfaces;
 using Events.Application.UseCases.EventParticipantUseCase.Update;
-using Events.Application.UseCases.EventParticipantUseCase.Update.Interfaces;
 using Events.Application.UseCases.EventUseCase.Delete;
-using Events.Application.UseCases.EventUseCase.Delete.Interfaces;
 using Events.Application.UseCases.EventUseCase.Get;
-using Events.Application.UseCases.EventUseCase.Get.Interfaces;
 using Events.Application.UseCases.EventUseCase.Insert;
-using Events.Application.UseCases.EventUseCase.Insert.Interfaces;
 using Events.Application.UseCases.EventUseCase.Update;
-using Events.Application.UseCases.EventUseCase.Update.Interfaces;
 using Events.Application.UseCases.Hash.HashPassword;
-using Events.Application.UseCases.HashUseCase.Hash.Interfaces;
 using Events.Application.UseCases.HashUseCase.Verify;
-using Events.Application.UseCases.HashUseCase.Verify.Interfaces;
 using Events.Application.UseCases.ParticipantUseCase.Delete;
-using Events.Application.UseCases.ParticipantUseCase.Delete.Interfaces;
 using Events.Application.UseCases.ParticipantUseCase.Get;
-using Events.Application.UseCases.ParticipantUseCase.Get.Interfaces;
 using Events.Application.UseCases.ParticipantUseCase.Insert;
-using Events.Application.UseCases.ParticipantUseCase.Insert.Interfaces;
 using Events.Application.UseCases.ParticipantUseCase.Login;
-using Events.Application.UseCases.ParticipantUseCase.Login.Interfaces;
 using Events.Application.UseCases.ParticipantUseCase.Update;
-using Events.Application.UseCases.ParticipantUseCase.Update.Interfaces;
 using Events.Application.UseCases.TokenUseCase.Generate;
-using Events.Application.UseCases.TokenUseCase.Generate.Interfaces;
+using Events.Application.UseCases.TokenUseCase.Validation;
 using Events.Application.Validation.Category;
 using Events.Application.Validation.Event;
+using Events.Application.Validation.EventParticipant;
+using Events.Application.Validation.Page;
 using Events.Application.Validation.Participant;
+using Events.Application.Validation.Token;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
@@ -91,6 +82,7 @@ namespace Events.Application.Configuration
             services.AddScoped<IGetAllParticipantUseCase, GetAllParticipantUseCase>();
 
             services.AddScoped<IGetByIdParticipantUseCase, GetByIdParticipantUseCase>();
+            services.AddScoped<IGetByEmailParticipantUseCase, GetByEmailParticipantUseCase>();
             services.AddScoped<IGetByIdEventParticipantUseCase, GetByIdEventParticipantUseCase>();
             services.AddScoped<IGetByIdEventUseCase, GetByIdEventUseCase>();
             services.AddScoped<IGetByIdCategoryUseCase, GetByIdCategoryUseCase>();
@@ -110,8 +102,7 @@ namespace Events.Application.Configuration
             services.AddScoped<IVerifyPasswordUseCase, VerifyPasswordUseCase>();
 
             services.AddScoped<ITokenGenerateUseCase, TokenGenerateUseCase>();
-
-            services.AddScoped<ICacheImageUseCase, CacheImageUseCase>();
+            services.AddScoped<ITokenInvalidUseCase, TokenInvalidUseCase>();
 
             services.AddScoped<IValidator<EventDTO>, EventValidator>();
             services.AddScoped<IValidator<CategoryDTO>, CategoryValidator>();
@@ -121,6 +112,9 @@ namespace Events.Application.Configuration
             services.AddScoped<IValidator<UpdateParticipantDTO>, UpdateParticipantValidator>();
             services.AddScoped<IValidator<UpdateEventDTO>, UpdateEventValidator>();
             services.AddScoped<IValidator<CreateCategoryDTO>, CreateCategoryValidator>();
+            services.AddScoped<IValidator<PageDTO>, PageValidator>();
+            services.AddScoped<IValidator<TokenDTO>, TokenValidator>();
+            services.AddScoped<IValidator<EventParticipantDTO>, EventParticipantValidator>();
 
             services.AddMemoryCache();
 

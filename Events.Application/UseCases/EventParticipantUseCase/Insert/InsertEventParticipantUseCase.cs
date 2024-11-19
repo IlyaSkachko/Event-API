@@ -1,7 +1,8 @@
 using AutoMapper;
 using Events.Application.DTO.EventParticipant;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.EventParticipantUseCase.Insert.Interfaces;
+using Events.Application.Interfaces.UseCase.EventParticipant;
+using Events.Application.Validation.EventParticipant;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
 
@@ -20,21 +21,20 @@ namespace Events.Application.UseCases.EventParticipantUseCase.Insert
 
         public async Task ExecuteAsync(EventParticipantDTO dto, CancellationToken cancellationToken)
         {
-            if (dto is null)
+            var validator = new EventParticipantValidator();
+
+            var validationResult = validator.Validate(dto);
+
+            if (!validationResult.IsValid)
             {
-                throw new BadRequestException("Invalid insert operation! Event partipant data is missing");
+                throw new BadRequestException(validationResult.ToString());
             }
 
-            try
-            {
-                var eventParticipant = mapper.Map<EventParticipant>(dto);
+            var eventParticipant = mapper.Map<EventParticipant>(dto);
 
-                await unitOfWork.EventParticipantRepository.InsertAsync(eventParticipant, cancellationToken);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new AlreadyExistException("Invalid insert operation! This event participant already exist");
-            }
+            await unitOfWork.EventParticipantRepository.InsertAsync(eventParticipant, cancellationToken);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

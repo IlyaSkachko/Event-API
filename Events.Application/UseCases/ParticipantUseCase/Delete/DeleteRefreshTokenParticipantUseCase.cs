@@ -1,6 +1,6 @@
 using Events.Application.DTO.Participant;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.ParticipantUseCase.Delete.Interfaces;
+using Events.Application.Interfaces.UseCase.Participant;
 using Events.Domain.Interfaces.UOW;
 using System.Diagnostics;
 
@@ -17,29 +17,13 @@ namespace Events.Application.UseCases.ParticipantUseCase.Delete
 
         public async Task ExecuteAsync(ParticipantDTO dto, CancellationToken cancellationToken)
         {
-            if (dto is null)
-            {
-                throw new BadRequestException("Participant data is missing");
-            }
-
             var participant = await unitOfWork.ParticipantRepository.GetByIdAsync(dto.Id, cancellationToken);
-
-            if (participant is null)
-            {
-                throw new NotFoundException("Invalid delete refresh token operation! Participant is not found!");
-            }
 
             participant.RefreshToken = "";
 
-            try
-            {
-                await unitOfWork.ParticipantRepository.UpdateAsync(participant, cancellationToken);
-            }
+            await unitOfWork.ParticipantRepository.UpdateAsync(participant, cancellationToken);
 
-            catch(InvalidOperationException)
-            {
-                throw new NotFoundException("Invalid update operation! This event participant does not exist");
-            }
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

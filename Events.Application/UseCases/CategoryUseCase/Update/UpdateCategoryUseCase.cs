@@ -1,7 +1,8 @@
 using AutoMapper;
 using Events.Application.DTO.Category;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.CategoryUseCase.Update.Interfaces;
+using Events.Application.Interfaces.UseCase.Category;
+using Events.Application.Validation.Category;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
 
@@ -18,23 +19,22 @@ namespace Events.Application.UseCases.CategoryUseCase.Update
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task ExecuteAsync(CategoryDTO dto, CancellationToken cancellationToken)
+        public async Task ExecuteAsync(CategoryDTO categoryDTO, CancellationToken cancellationToken)
         {
-            if (dto is null)
+            var validator = new CategoryValidator();
+
+            var validationResult = validator.Validate(categoryDTO);
+
+            if (!validationResult.IsValid)
             {
-                throw new BadRequestException("Category data is missing");
+                throw new BadRequestException(validationResult.ToString());
             }
 
-            try
-            {
-                var category = mapper.Map<Category>(dto);
+            var category = mapper.Map<Category>(categoryDTO);
 
-                await unitOfWork.CategoryRepository.UpdateAsync(category, cancellationToken);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException("Invalid update operation! This category does not exist");
-            }
+            await unitOfWork.CategoryRepository.UpdateAsync(category, cancellationToken);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

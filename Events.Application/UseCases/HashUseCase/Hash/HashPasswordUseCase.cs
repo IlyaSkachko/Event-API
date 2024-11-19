@@ -1,4 +1,4 @@
-using Events.Application.UseCases.HashUseCase.Hash.Interfaces;
+using Events.Application.Interfaces.UseCase.Hash;
 using System.Security.Cryptography;
 using System.Text;
 

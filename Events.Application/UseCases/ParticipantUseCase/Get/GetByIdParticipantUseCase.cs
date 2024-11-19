@@ -2,7 +2,7 @@ using AutoMapper;
 using Events.Application.DTO.Category;
 using Events.Application.DTO.Participant;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.ParticipantUseCase.Get.Interfaces;
+using Events.Application.Interfaces.UseCase.Participant;
 using Events.Domain.Interfaces.UOW;
 
 namespace Events.Application.UseCases.ParticipantUseCase.Get
@@ -20,16 +20,9 @@ namespace Events.Application.UseCases.ParticipantUseCase.Get
 
         public async Task<ParticipantDTO> ExecuteAsync(int id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var participant = await unitOfWork.ParticipantRepository.GetByIdAsync(id, cancellationToken);
+            var participant = await unitOfWork.ParticipantRepository.GetByIdAsync(id, cancellationToken);
 
-                return mapper.Map<ParticipantDTO>(participant);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException("Category is not found");
-            }
+            return mapper.Map<ParticipantDTO>(participant);
         }
     }
 }

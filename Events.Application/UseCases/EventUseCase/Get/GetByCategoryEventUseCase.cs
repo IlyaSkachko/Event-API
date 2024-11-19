@@ -1,7 +1,9 @@
 using AutoMapper;
 using Events.Application.DTO.Event;
+using Events.Application.DTO.Page;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.EventUseCase.Get.Interfaces;
+using Events.Application.Interfaces.UseCase.Event;
+using Events.Application.Validation.Page;
 using Events.Domain.Interfaces.UOW;
 
 namespace Events.Application.UseCases.EventUseCase.Get
@@ -19,17 +21,18 @@ namespace Events.Application.UseCases.EventUseCase.Get
 
         public async Task<IEnumerable<EventDTO>> ExecuteAsync(int pageNumber, int pageSize, int id, CancellationToken cancellationToken)
         {
-            if (pageNumber < 1 || pageSize < 1)
+            var pageDTO = new PageDTO() { PageNumber = pageNumber, PageSize = pageSize };
+
+            var validator = new PageValidator();
+
+            var validationResult = validator.Validate(pageDTO);
+
+            if (!validationResult.IsValid)
             {
-                throw new BadRequestException("Negative page option");
+                throw new BadRequestException(validationResult.ToString());
             }
 
-            var collection = await unitOfWork.EventRepository.GetByCategoryAsync(pageNumber, pageSize, id, cancellationToken);
-
-            if (collection is null)
-            {
-                throw new NotFoundException("Events are not found");
-            }
+            var collection = await unitOfWork.EventRepository.GetByCategoryAsync(pageDTO.PageNumber, pageDTO.PageSize, id, cancellationToken);
 
             return mapper.Map<IEnumerable<EventDTO>>(collection);
         }

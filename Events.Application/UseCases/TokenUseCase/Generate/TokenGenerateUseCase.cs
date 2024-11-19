@@ -1,5 +1,5 @@
 using Events.Application.DTO.Participant;
-using Events.Application.UseCases.TokenUseCase.Generate.Interfaces;
+using Events.Application.Interfaces.UseCase.Token;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

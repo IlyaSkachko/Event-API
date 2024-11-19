@@ -68,5 +68,10 @@ namespace Events.Infrastructure.UOW
         {
             this.dbContext = dbContext;
         }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+        {
+           await dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

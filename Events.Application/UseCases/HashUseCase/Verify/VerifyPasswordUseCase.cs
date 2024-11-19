@@ -1,5 +1,5 @@
+using Events.Application.Interfaces.UseCase.Hash;
 using Events.Application.UseCases.Hash;
-using Events.Application.UseCases.HashUseCase.Verify.Interfaces;
 using System.Security.Cryptography;
 
 namespace Events.Application.UseCases.HashUseCase.Verify

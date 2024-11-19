@@ -1,8 +1,9 @@
 using AutoMapper;
 using Events.Application.DTO.Event;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.EventUseCase.Get.Interfaces;
+using Events.Application.Interfaces.UseCase.Event;
 using Events.Domain.Interfaces.UOW;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Events.Application.UseCases.EventUseCase.Get
 {
@@ -19,17 +20,7 @@ namespace Events.Application.UseCases.EventUseCase.Get
 
         public async Task<EventDTO> ExecuteAsync(string name, CancellationToken cancellationToken)
         {
-            if (name is null)
-            {
-                throw new BadRequestException("Event name is missing");
-            }
-
             var _event = await unitOfWork.EventRepository.GetByNameAsync(name, cancellationToken);
-
-            if (_event == null )
-            {
-                throw new NotFoundException("Event is not found");
-            }
 
             return mapper.Map<EventDTO>(_event);
         }

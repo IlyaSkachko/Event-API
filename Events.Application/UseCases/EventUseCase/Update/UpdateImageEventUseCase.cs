@@ -1,5 +1,5 @@
 using Events.Application.Exceptions;
-using Events.Application.UseCases.EventUseCase.Update.Interfaces;
+using Events.Application.Interfaces.UseCase.Event;
 using Events.Domain.Interfaces.UOW;
 
 namespace Events.Application.UseCases.EventUseCase.Update
@@ -15,14 +15,9 @@ namespace Events.Application.UseCases.EventUseCase.Update
 
         public async Task ExecuteAsync(int eventId, string url, CancellationToken cancellationToken)
         {
-            try
-            {
-                await unitOfWork.EventRepository.AddImageAsync(eventId, url, cancellationToken);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException("Invalid update image operation! Event doesn't exist");
-            }
+            await unitOfWork.EventRepository.AddImageAsync(eventId, url, cancellationToken);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

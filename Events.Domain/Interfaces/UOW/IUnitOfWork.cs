@@ -8,5 +8,7 @@ namespace Events.Domain.Interfaces.UOW
         IEventRepository EventRepository { get; }
         IEventParticipantRepository EventParticipantRepository { get; }
         IParticipantRepository ParticipantRepository { get; }
+
+        Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

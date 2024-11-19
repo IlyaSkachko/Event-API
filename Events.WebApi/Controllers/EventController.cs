@@ -1,20 +1,11 @@
 ﻿using AutoMapper;
 using Events.Application.DTO.Event;
 using Events.Application.DTO.EventParticipant;
-using Events.Application.UseCases.CacheUseCase.ImageCache;
-using Events.Application.UseCases.CacheUseCase.ImageCache.Interfaces;
-using Events.Application.UseCases.CloudinaryUseCase.Upload.Interfaces;
-using Events.Application.UseCases.EventParticipantUseCase.Delete.Interfaces;
-using Events.Application.UseCases.EventParticipantUseCase.Get.Interfaces;
-using Events.Application.UseCases.EventParticipantUseCase.Insert.Interfaces;
-using Events.Application.UseCases.EventParticipantUseCase.Update.Interfaces;
-using Events.Application.UseCases.EventUseCase.Delete.Interfaces;
-using Events.Application.UseCases.EventUseCase.Get.Interfaces;
-using Events.Application.UseCases.EventUseCase.Insert.Interfaces;
-using Events.Application.UseCases.EventUseCase.Update.Interfaces;
+using Events.Application.Interfaces.UseCase.Cloudinary;
+using Events.Application.Interfaces.UseCase.Event;
+using Events.Application.Interfaces.UseCase.EventParticipant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Events.WebApi.Controllers
 {
@@ -39,7 +30,6 @@ namespace Events.WebApi.Controllers
         private readonly IGetByIdEventParticipantUseCase getByIdEventParticipant;
         private readonly IUpdateEventParticipantUseCase updateEventParticipantUseCase;
         private readonly IMapper mapper;
-        private readonly ICacheImageUseCase cacheImageUseCase;
         private readonly IUploadImageCloudinaryUseCase uploadImageCloudinaryUseCase;
 
         public EventController(IGetAllEventUseCase getAllEventUseCase, IGetByIdEventUseCase getByIdEventUseCase, IGetByLocationEventUseCase getLocationEventUseCase,
@@ -48,7 +38,7 @@ namespace Events.WebApi.Controllers
             IDeleteEventUseCase deleteEventUseCase, IInsertEventParticipantUseCase insertEventParticipantUseCase, 
             IDeleteEventParticipantUseCase deleteEventParticipantUseCase, IGetAllEventParticipantUseCase getAllEventParticipantUseCase, 
             IGetByIdEventParticipantUseCase getByIdEventParticipant, IUpdateEventParticipantUseCase updateEventParticipantUseCase, 
-            IMapper mapper, ICacheImageUseCase cacheImageUseCase, IUploadImageCloudinaryUseCase uploadImageCloudinaryUseCase)
+            IMapper mapper, IUploadImageCloudinaryUseCase uploadImageCloudinaryUseCase)
         {
             this.getAllEventUseCase = getAllEventUseCase;
             this.getByIdEventUseCase = getByIdEventUseCase;
@@ -66,7 +56,7 @@ namespace Events.WebApi.Controllers
             this.getByIdEventParticipant = getByIdEventParticipant;
             this.updateEventParticipantUseCase = updateEventParticipantUseCase;
             this.mapper = mapper;
-            this.cacheImageUseCase = cacheImageUseCase;
+
             this.uploadImageCloudinaryUseCase = uploadImageCloudinaryUseCase;
         }
 
@@ -118,6 +108,11 @@ namespace Events.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEvent([FromBody] EventDTO eventDTO, CancellationToken cancellationToken)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await insertEventUseCase.ExecuteAsync(eventDTO, cancellationToken);
 
             return Ok();
@@ -127,7 +122,9 @@ namespace Events.WebApi.Controllers
         [HttpPost("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> AddParticipant(int eventId, int participantId, CancellationToken cancellationToken)
         {
-            await insertEventParticipantUseCase.ExecuteAsync(new EventParticipantDTO { EventId = eventId, ParticipantId = participantId}, cancellationToken);
+            var eventParticipant = new EventParticipantDTO { EventId = eventId, ParticipantId = participantId };
+
+            await insertEventParticipantUseCase.ExecuteAsync(eventParticipant, cancellationToken);
 
             return Ok();
         }
@@ -136,6 +133,11 @@ namespace Events.WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvent(int id, [FromBody] UpdateEventDTO eventDTO, CancellationToken cancellationToken)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var _event = mapper.Map<EventDTO>(eventDTO);
 
             _event.Id = id;
@@ -149,9 +151,7 @@ namespace Events.WebApi.Controllers
         [HttpPut("{eventId}/image")]
         public async Task<IActionResult> UpdateImageEvent(int eventId, IFormFile file, CancellationToken cancellationToken)
         {
-            var cacheDuration = TimeSpan.FromMinutes(60); 
-            
-            string url = await cacheImageUseCase.ExecuteAsync(eventId, file, uploadImageCloudinaryUseCase.ExecuteAsync, cacheDuration);
+            string url = await uploadImageCloudinaryUseCase.ExecuteAsync(file);
             
             await updateImageEventUseCase.ExecuteAsync(eventId, url, cancellationToken);
             

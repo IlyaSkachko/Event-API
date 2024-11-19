@@ -1,7 +1,7 @@
 using AutoMapper;
 using Events.Application.DTO.Category;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.CategoryUseCase.Insert.Interfaces;
+using Events.Application.Interfaces.UseCase.Category;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
 
@@ -20,21 +20,11 @@ namespace Events.Application.UseCases.CategoryUseCase.Insert
 
         public async Task ExecuteAsync(CreateCategoryDTO dto, CancellationToken cancellationToken)
         {
-            if (dto is null)
-            {
-                throw new BadRequestException("Category data is missing");
-            }
+            var category = mapper.Map<Category>(dto);
 
-            try
-            {
-                var category = mapper.Map<Category>(dto);
+            await unitOfWork.CategoryRepository.InsertAsync(category, cancellationToken);
 
-                await unitOfWork.CategoryRepository.InsertAsync(category, cancellationToken);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new AlreadyExistException("Invalid insert operation! This category already exist");
-            }
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using Events.Application.DTO.Participant;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.ParticipantUseCase.Get.Interfaces;
+using Events.Application.Interfaces.UseCase.Participant;
 using Events.Domain.Interfaces.UOW;
 
 namespace Events.Application.UseCases.ParticipantUseCase.Get
@@ -20,11 +20,6 @@ namespace Events.Application.UseCases.ParticipantUseCase.Get
         public async Task<IEnumerable<ParticipantDTO>> ExecuteAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var collection = await unitOfWork.ParticipantRepository.GetAllAsync(pageNumber, pageSize, cancellationToken);
-
-            if (collection is null)
-            {
-                throw new NotFoundException("Participants are not found");
-            }
 
             return mapper.Map<IEnumerable<ParticipantDTO>>(collection);
         }

@@ -1,6 +1,6 @@
 using AutoMapper;
 using Events.Application.Exceptions;
-using Events.Application.UseCases.CategoryUseCase.Delete.Interfaces;
+using Events.Application.Interfaces.UseCase.Category;
 using Events.Domain.Interfaces.UOW;
 using Events.Domain.Models;
 
@@ -21,19 +21,9 @@ namespace Events.Application.UseCases.CategoryUseCase.Delete
         {
             var category = await unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
 
-            if (category is null)
-            {
-                throw new BadRequestException("Invalid delete operation! This category does not exist");
-            }
+            await unitOfWork.CategoryRepository.DeleteAsync(category, cancellationToken);
 
-            try
-            {
-                await unitOfWork.CategoryRepository.DeleteAsync(category, cancellationToken);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException("Invalid delete operation! This category is not found");
-            }
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

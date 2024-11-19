@@ -14,11 +14,6 @@ namespace Events.Infrastructure.Repositories
         public async Task AddImageAsync(int id, string image, CancellationToken cancellationToken)
         {
             var entity = await GetByIdAsync(id, cancellationToken); 
-
-            if (entity is null)
-            {
-                throw new InvalidOperationException("Invalid add image operation! Event does not exist");
-            }    
             
             entity.Image = image;
 
