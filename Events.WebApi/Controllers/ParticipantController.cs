@@ -26,6 +26,7 @@ namespace Events.WebApi.Controllers
         private readonly ITokenInvalidUseCase tokenInvalidUseCase;
         private readonly IHashPasswordUseCase hashPasswordUseCase;
         private readonly IVerifyPasswordUseCase verifyPasswordUseCase;
+        private readonly IRefreshTokenParticipantUseCase refreshTokenParticipantUseCase;
         private readonly IMapper mapper;
 
         public ParticipantController(IGetAllParticipantUseCase getAllParticipantUseCase, IGetByIdParticipantUseCase getByIdParticipantUseCase, 
@@ -33,7 +34,8 @@ namespace Events.WebApi.Controllers
             IInsertParticipantUseCase insertParticipantUseCase, IUpdateParticipantUseCase updateParticipantUseCase,
             IDeleteParticipantUseCase deleteParticipantUseCase, IDeleteRefreshTokenParticipantUseCase deleteRefreshTokenParticipantUseCase,
             ILoginParticipantUseCase loginParticipantUseCase, ITokenGenerateUseCase tokenGenerateUseCase, ITokenInvalidUseCase tokenInvalidUseCase,
-            IHashPasswordUseCase hashPasswordUseCase, IVerifyPasswordUseCase verifyPasswordUseCase, IMapper mapper)
+            IHashPasswordUseCase hashPasswordUseCase, IVerifyPasswordUseCase verifyPasswordUseCase, IRefreshTokenParticipantUseCase refreshTokenParticipantUseCase,
+            IMapper mapper)
         {
             this.getAllParticipantUseCase = getAllParticipantUseCase;
             this.getByIdParticipantUseCase = getByIdParticipantUseCase;
@@ -48,6 +50,7 @@ namespace Events.WebApi.Controllers
             this.tokenInvalidUseCase = tokenInvalidUseCase;
             this.hashPasswordUseCase = hashPasswordUseCase;
             this.verifyPasswordUseCase = verifyPasswordUseCase;
+            this.refreshTokenParticipantUseCase = refreshTokenParticipantUseCase;
             this.mapper = mapper;
         }
 
@@ -58,37 +61,8 @@ namespace Events.WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var participant = await getByEmailParticipantUseCase.ExecuteAsync(participantDTO, cancellationToken);
-
-            if (!verifyPasswordUseCase.Execute(participantDTO.Password, participant.Password, participant.PasswordSalt))
-            {
-                throw new UnauthorizedAccessException("Invalid password! Access denied");
-            }
-
-            var accessExpires = DateTime.UtcNow.AddMinutes(15);
-            var refreshExpires = DateTime.UtcNow.AddDays(7);
-
-            var accessToken = tokenGenerateUseCase.Execute(participant, accessExpires);
-            var refreshToken = tokenGenerateUseCase.Execute(participant, refreshExpires);
-
-            await loginParticipantUseCase.ExecuteAsync(participantDTO, refreshToken, cancellationToken);
-
-            var accessCookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = accessExpires
-            };
-
-            Response.Cookies.Append("access-token", accessToken, accessCookieOptions);
-
-            var refreshCookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = refreshExpires
-            };
-
-            Response.Cookies.Append("refresh-token", refreshToken, refreshCookieOptions);
+           
+            await loginParticipantUseCase.ExecuteAsync(HttpContext, participantDTO, cancellationToken);
 
             return Ok();
         }
@@ -96,35 +70,7 @@ namespace Events.WebApi.Controllers
         [HttpPut("refresh")]
         public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
         {
-            var refreshToken = Request.Cookies["refresh-token"];
-
-            var participant = await getByRefreshTokenParticipantUseCase.ExecuteAsync(refreshToken, cancellationToken);
-
-            var handler = new JwtSecurityTokenHandler();
-
-            var jwtToken = handler.ReadToken(refreshToken) as JwtSecurityToken;
-
-            if (tokenInvalidUseCase.Execute(jwtToken))
-            {
-                Response.Cookies.Delete("access-token");
-                Response.Cookies.Delete("refresh-token");
-
-                await deleteRefreshTokenParticipantUseCase.ExecuteAsync(participant, cancellationToken);
-
-                throw new UnauthorizedAccessException("Refresh token has expired");
-            }
-
-            var accessExpires = DateTime.UtcNow.AddMinutes(15);
-
-            var newAccessToken = tokenGenerateUseCase.Execute(participant, accessExpires);
-
-            var accessCookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = accessExpires
-            };
-
-            Response.Cookies.Append("access-token", newAccessToken, accessCookieOptions);
+            refreshTokenParticipantUseCase.ExecuteAsync(HttpContext, cancellationToken);
 
             return Ok();
         }
@@ -138,6 +84,7 @@ namespace Events.WebApi.Controllers
             var participant = await getByRefreshTokenParticipantUseCase.ExecuteAsync(refreshToken, cancellationToken);
 
             Response.Cookies.Delete("access-token");
+
             Response.Cookies.Delete("refresh-token");
 
             await deleteRefreshTokenParticipantUseCase.ExecuteAsync(participant, cancellationToken);

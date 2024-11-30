@@ -38,6 +38,12 @@ namespace Events.WebApi
 
             app.UseMiddleware<ErrorMiddleware>();
 
+            app.UseStatusCodePages(async context =>
+            {
+                context.HttpContext.Response.ContentType = "application/json";
+                await context.HttpContext.Response.WriteAsJsonAsync("Resource Not Found");
+            });
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
