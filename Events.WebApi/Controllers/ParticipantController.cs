@@ -70,7 +70,7 @@ namespace Events.WebApi.Controllers
         [HttpPut("refresh")]
         public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
         {
-            refreshTokenParticipantUseCase.ExecuteAsync(HttpContext, cancellationToken);
+            await refreshTokenParticipantUseCase.ExecuteAsync(HttpContext, cancellationToken);
 
             return Ok();
         }

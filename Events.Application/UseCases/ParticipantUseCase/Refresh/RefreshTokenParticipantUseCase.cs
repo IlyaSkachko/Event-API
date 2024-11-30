@@ -31,7 +31,9 @@ namespace Events.Application.UseCases.ParticipantUseCase.Refresh
         {
             var refreshToken = httpContext.Request.Cookies["refresh-token"];
 
-            var participant = mapper.Map<ParticipantDTO>(await unitOfWork.ParticipantRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken));
+            var participantByRefresh = await unitOfWork.ParticipantRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+
+            var participant = mapper.Map<ParticipantDTO>(participantByRefresh);
 
             var handler = new JwtSecurityTokenHandler();
 

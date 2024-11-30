@@ -32,6 +32,7 @@ using Events.Application.UseCases.ParticipantUseCase.Delete;
 using Events.Application.UseCases.ParticipantUseCase.Get;
 using Events.Application.UseCases.ParticipantUseCase.Insert;
 using Events.Application.UseCases.ParticipantUseCase.Login;
+using Events.Application.UseCases.ParticipantUseCase.Refresh;
 using Events.Application.UseCases.ParticipantUseCase.Update;
 using Events.Application.UseCases.TokenUseCase.Generate;
 using Events.Application.UseCases.TokenUseCase.Validation;
@@ -103,6 +104,8 @@ namespace Events.Application.Configuration
 
             services.AddScoped<ITokenGenerateUseCase, TokenGenerateUseCase>();
             services.AddScoped<ITokenInvalidUseCase, TokenInvalidUseCase>();
+
+            services.AddScoped<IRefreshTokenParticipantUseCase, RefreshTokenParticipantUseCase>();
 
             services.AddScoped<IValidator<EventDTO>, EventValidator>();
             services.AddScoped<IValidator<CategoryDTO>, CategoryValidator>();
